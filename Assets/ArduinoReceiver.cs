@@ -1,46 +1,82 @@
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+using System;
 using System.IO.Ports;
+using System.Linq;
+using UnityEngine;
 
 public class ArduinoReceiver : MonoBehaviour
 {
-    SerialPort sp = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
-    // Start is called before the first frame update
+    [Header("Serial")]
+    [SerializeField] string portName = "COM3";
+    [SerializeField] int baudRate = 9600;
+    [SerializeField] int readTimeoutMs = 25;
+
+    SerialPort serialPort;
+
     void Start()
     {
-        sp.Open();
-        /*
-        Set the read timeout low so unity doesn't freeze,
-        and catch the exception below in update that unity will throw
-        when the port isn't open and unity tries to check it
-        */
-        sp.ReadTimeout = 1;
-    }
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (sp.IsOpen)
+        try
         {
-            try
+            var ports = SerialPort.GetPortNames();
+            bool portAvailable = ports.Any(p => string.Equals(p, portName, StringComparison.OrdinalIgnoreCase));
+            if (!portAvailable)
             {
-                int tempInt = int.Parse(sp.ReadLine());
-                ButtonPressed(tempInt);
+                Debug.LogWarning($"Serial: '{portName}' not found. Disabling ArduinoReceiver.");
+                enabled = false;
+                return;
             }
-            catch (System.Exception){}
+
+            serialPort = new SerialPort(portName, baudRate)
+            {
+                ReadTimeout = readTimeoutMs
+            };
+            serialPort.Open();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Serial open failed: {e.Message}. Disabling ArduinoReceiver.");
+            enabled = false;
         }
     }
 
-    private void ButtonPressed(int button)
+    void OnDisable()
     {
-        switch (button)
+        if (serialPort != null)
         {
-            case 9: Debug.Log("Centered");
-            break;
-            case 8: Debug.Log("Jumped");
-            break;
+            try { if (serialPort.IsOpen) serialPort.Close(); } catch { /* ignore */ }
+            serialPort.Dispose();
+            serialPort = null;
+        }
+    }
+
+    void Update()
+    {
+        if (serialPort == null || !serialPort.IsOpen) return;
+
+        try
+        {
+            // Example protocol: "JUMP" or "MOVE:-1..1"
+            string line = serialPort.ReadLine().Trim();
+
+            if (string.Equals(line, "JUMP", StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (var p in UnityEngine.Object.FindObjectsByType<PlayerMovement2D>(FindObjectsSortMode.None))
+                    p.ExternalJump();
+            }
+            else if (line.StartsWith("MOVE:", StringComparison.OrdinalIgnoreCase))
+            {
+                var parts = line.Split(':');
+                if (parts.Length == 2 && float.TryParse(parts[1], out float x))
+                {
+                    x = Mathf.Clamp(x, -1f, 1f);
+                    foreach (var p in UnityEngine.Object.FindObjectsByType<PlayerMovement2D>(FindObjectsSortMode.None))
+                        p.ExternalMove(x);
+                }
+            }
+        }
+        catch (TimeoutException) { /* no data this frame */ }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Serial read error: {e.Message}");
         }
     }
 }

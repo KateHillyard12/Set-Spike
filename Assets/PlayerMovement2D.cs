@@ -1,102 +1,101 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody), typeof(PlayerInput))]
 public class PlayerMovement2D : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 6f;
-    public float airControlMultiplier = 0.8f;   // lower = less control in air
+    public float airControlMultiplier = 0.8f;
 
     [Header("Jump")]
-    public float jumpForce = 7.5f;              // in m/s applied as velocity change
+    public float jumpForce = 7.5f;
 
     [Header("Ground Check (3D)")]
-    public Transform groundCheck;               // place at feet
+    public Transform groundCheck;         // place at feet
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
     [Header("2.5D Lane Lock")]
-    public float laneZ = 0f;                    // keep the player locked to this Z
+    public float laneZ = 0f;              // keep player on this Z
 
-    private Rigidbody rb;
-    private PlayerControls controls;
-
-    private Vector2 moveInput;
-    private bool jumpQueued;
-    private bool isGrounded;
+    // --- internals ---
+    Rigidbody rb;
+    Vector2 moveInput;
+    bool jumpQueued;
+    bool isGrounded;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-        // Input System (generated class)
-        controls = new PlayerControls();
-        controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        controls.Player.Move.canceled  += ctx => moveInput = Vector2.zero;
-        controls.Player.Jump.performed += ctx => jumpQueued = true;
+        // Freeze Z / Rot XZ in the Rigidbody constraints from the Inspector.
     }
-
-    void OnEnable()  => controls.Player.Enable();
-    void OnDisable() => controls.Player.Disable();
 
     void Update()
     {
-        // Ground check using 3D physics
-        if (groundCheck != null)
+        // Ground check
+        if (groundCheck)
+        {
             isGrounded = Physics.CheckSphere(
                 groundCheck.position,
                 groundCheckRadius,
                 groundLayer,
                 QueryTriggerInteraction.Ignore
             );
+        }
 
-        // Handle jump on Update to minimize input latency
+        // Jump
         if (jumpQueued && isGrounded)
         {
-            // zero vertical first so repeated jumps feel consistent
-            Vector3 v = rb.linearVelocity;
-            v.y = 0f;
+            var v = rb.linearVelocity;
+            v.y = 0f;                 // consistent jump height
             rb.linearVelocity = v;
-
-            // apply instant upward velocity
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         }
         jumpQueued = false;
 
-        // Keep player locked to lane Z (works with continuous collisions)
-        Vector3 p = rb.position;
+        // Lock to lane Z
+        var p = rb.position;
         if (Mathf.Abs(p.z - laneZ) > 0.0001f)
             rb.position = new Vector3(p.x, p.y, laneZ);
     }
 
     void FixedUpdate()
     {
-        // Horizontal movement on X only; preserve existing Y velocity
+        // Horizontal move (X only)
         float control = isGrounded ? 1f : airControlMultiplier;
-        Vector3 vel = rb.linearVelocity;
+        var vel = rb.linearVelocity;
         vel.x = moveInput.x * moveSpeed * control;
         rb.linearVelocity = vel;
 
-        // Simple facing flip (assumes right-facing scale = +1)
+        // Simple facing flip
         if (Mathf.Abs(moveInput.x) > 0.01f)
         {
             float dir = Mathf.Sign(moveInput.x);
-            Vector3 s = transform.localScale;
+            var s = transform.localScale;
             transform.localScale = new Vector3(Mathf.Abs(s.x) * dir, s.y, s.z);
         }
     }
 
-    // Optional: hook these if you’re using PlayerInput (Send Messages / Unity Events)
-    public void OnMove(InputAction.CallbackContext ctx)   => moveInput = ctx.ReadValue<Vector2>();
-    public void OnJump(InputAction.CallbackContext ctx)   { if (ctx.performed) jumpQueued = true; }
+    // -------- Input System (supports both modes) --------
+    // Send Messages signatures:
+    public void OnMove(InputValue value) { moveInput = value.Get<Vector2>(); }
+    public void OnJump(InputValue value) { if (value.isPressed) jumpQueued = true; }
+
+    // Unity Events signatures:
+    public void OnMove(InputAction.CallbackContext ctx) { moveInput = ctx.ReadValue<Vector2>(); }
+    public void OnJump(InputAction.CallbackContext ctx) { if (ctx.performed) jumpQueued = true; }
 
     void OnDrawGizmosSelected()
     {
-        if (groundCheck == null) return;
+        if (!groundCheck) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
+
+    // --- External (e.g., Arduino) helpers ---
+    public void ExternalJump() => jumpQueued = true;
+    public void ExternalMove(float x) => moveInput = new Vector2(Mathf.Clamp(x, -1f, 1f), 0f);
 }
