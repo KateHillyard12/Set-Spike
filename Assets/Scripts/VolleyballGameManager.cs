@@ -126,8 +126,7 @@ public class VolleyballGameManager : MonoBehaviour
         float dir = Random.value < 0.5f ? -1f : 1f;
         currentBall.Launch(new Vector3(dir * serveSpeedX, serveSpeedY, 0f));
 
-        var binder = Object.FindFirstObjectByType<CameraTargetGroupBinder>();
-        if (binder) binder.RefreshMembers();
+
 
     }
 

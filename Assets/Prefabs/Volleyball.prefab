@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6267042967533772609}
   - component: {fileID: 6717073521391386031}
   - component: {fileID: 7692749169790609234}
+  - component: {fileID: 9066328990539388070}
   m_Layer: 0
   m_Name: Volleyball
   m_TagString: Untagged
@@ -158,3 +159,18 @@ MonoBehaviour:
   headBounceImpulse: 6
   carryXFromPlayer: 0.5
   maxSpeed: 18
+--- !u!114 &9066328990539388070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1863355245516185260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24a3a8bf82b0581468c227712934dbab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetGroupTag: CamTargetGroup
+  weight: 2.2
+  radius: 0.5
