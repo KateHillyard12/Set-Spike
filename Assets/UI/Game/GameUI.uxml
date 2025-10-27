@@ -6,10 +6,8 @@
             <ui:ProgressBar value="22" title="my-progress" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="BottemPannel" style="flex-grow: 1; justify-content: flex-start; flex-direction: column; align-content: stretch; align-self: auto;">
-        <ui:RadioButton label="Radio Button" />
-        <ui:RadioButton label="Radio Button" />
-        <ui:RadioButton label="Radio Button" />
-        <ui:RadioButton label="Radio Button" />
+    <ui:VisualElement name="BottomPannel" style="flex-grow: 0; justify-content: space-between; align-self: auto; align-items: auto; align-content: auto; flex-direction: row; font-size: 60px;">
+        <ui:Label text="Player 1" />
+        <ui:Label text="Player 2" />
     </ui:VisualElement>
 </ui:UXML>
