@@ -1,8 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="VisualElement" style="flex-grow: 1; flex-direction: column; align-self: stretch; justify-content: space-evenly; align-items: center; -unity-text-outline-color: rgb(236, 3, 3); color: rgb(0, 0, 0); background-color: rgb(171, 215, 191); align-content: auto;">
-        <ui:Button text="Button" style="color: rgb(0, 0, 0);" />
-        <ui:Button text="Button" />
-        <ui:Button text="Button" />
-        <ui:Button text="Button" />
-    </ui:VisualElement>
-</ui:UXML>
