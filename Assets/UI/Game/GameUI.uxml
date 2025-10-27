@@ -1,0 +1,15 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Game/GameCSS.uss?fileID=7433441132597879392&amp;guid=ffa8fb25497143d45912caad97a71216&amp;type=3#GameCSS" />
+    <ui:VisualElement name="MainVis" style="flex-grow: 1;">
+        <ui:VisualElement name="TopPannel" style="flex-grow: 0; align-items: flex-start; align-self: auto; align-content: center; justify-content: space-between; flex-direction: row;">
+            <ui:ProgressBar value="22" title="my-progress" />
+            <ui:ProgressBar value="22" title="my-progress" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="BottemPannel" style="flex-grow: 1; justify-content: flex-start; flex-direction: column; align-content: stretch; align-self: auto;">
+        <ui:RadioButton label="Radio Button" />
+        <ui:RadioButton label="Radio Button" />
+        <ui:RadioButton label="Radio Button" />
+        <ui:RadioButton label="Radio Button" />
+    </ui:VisualElement>
+</ui:UXML>

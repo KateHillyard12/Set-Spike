@@ -1,1 +1,42 @@
-VisualElement {}
+Button {
+    -unity-font-definition: url("project://database/Assets/TextMesh%20Pro/Fonts/LiberationSans.ttf?fileID=12800000&guid=e3265ab4bf004d28a9537516768c1c75&type=3#LiberationSans");
+    font-size: 75px;
+    color: rgb(0, 0, 0);
+    letter-spacing: 0;
+    word-spacing: 0;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgb(255, 255, 255);
+    margin-top: 13px;
+    margin-right: 13px;
+    margin-bottom: 13px;
+    margin-left: 13px;
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+}
+
+Button:hover {
+    border-left-color: rgb(238, 150, 16);
+    border-right-color: rgb(238, 150, 16);
+    border-top-color: rgb(238, 150, 16);
+    border-bottom-color: rgb(238, 150, 16);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    transition-timing-function: ease-in-out-bounce;
+    transition-duration: 0.1s;
+    background-color: rgb(255, 182, 0);
+    rotate: 6deg;
+    transition-delay: 0s;
+    transition-property: all;
+}
