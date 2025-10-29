@@ -15,7 +15,7 @@ public class PlayerSpawner : MonoBehaviour
 
     public bool setLaneZFromSpawn = true;
 
-    // Hook this in the PlayerInputManager inspector: "Player Joined Event"
+
     public void HandleJoined(PlayerInput pi)
     {
         bool isP1 = pi.playerIndex == 0;
@@ -27,7 +27,7 @@ public class PlayerSpawner : MonoBehaviour
             return;
         }
 
-        // Place/zero motion
+
         var rb = pi.GetComponent<Rigidbody>();
         if (rb)
         {
@@ -41,14 +41,13 @@ public class PlayerSpawner : MonoBehaviour
             pi.transform.SetPositionAndRotation(spawn.position, spawn.rotation);
         }
 
-        // Keep lane Z consistent (your 2.5D lock)
+
         if (setLaneZFromSpawn)
         {
             var mover = pi.GetComponent<PlayerMovement2D>();
             if (mover) mover.laneZ = spawn.position.z;
         }
 
-        // Optional tint
         var look = pi.GetComponent<PlayerAppearance>();
         if (look) look.Apply(isP1 ? p1Material : p2Material);
 

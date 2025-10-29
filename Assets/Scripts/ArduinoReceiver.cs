@@ -6,7 +6,7 @@ using UnityEngine;
 public class ArduinoReceiver : MonoBehaviour
 {
     [Header("Serial")]
-    [SerializeField] string portName = "COM3";
+    [SerializeField] string portName = "COM4";
     [SerializeField] int baudRate = 9600;
     [SerializeField] int readTimeoutMs = 25;
 

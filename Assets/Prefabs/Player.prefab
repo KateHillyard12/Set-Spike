@@ -200,6 +200,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   laneZ: 1
+  sandFXPrefab: {fileID: 942504840758030168, guid: 28c0032631e2cdc4299d1bc74515065b, type: 3}
+  jumpFXYOffset: 0.05
 --- !u!54 &5745816426249287962
 Rigidbody:
   m_ObjectHideFlags: 0
