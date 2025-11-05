@@ -1,34 +1,29 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
     [Header("Panels")]
-    [SerializeField] private GameObject pauseMenuRoot;   // whole pause menu panel
-    [SerializeField] private GameObject controlsPanel;   // child panel
-    [SerializeField] private GameObject rulesPanel;      // child panel
+    [SerializeField] private GameObject pauseMenuRoot;   // whole pause UI root (stays active)
+    [SerializeField] private GameObject mainButtonsPanel; // Resume / Controls / Rules / Quit
+    [SerializeField] private GameObject controlsPanel;
+    [SerializeField] private GameObject rulesPanel;
 
-    [Header("Optional: Use an existing InputAction called \"Pause\" in your maps")]
-    [Tooltip("If left empty, a fallback action (Esc/Start) is created automatically.")]
-    [SerializeField] private InputActionReference pauseActionRef;
+    [Header("Default Selection")]
+    [SerializeField] private GameObject firstMainButton;     // e.g. Resume
 
-    private bool isPaused = false;
 
-    // Track per-player subscriptions so both players can pause
-    private readonly List<InputAction> _subscribedPlayerActions = new();
-
-    // Global fallback (Esc / Start) in case you didn’t create a Pause action
-    private InputAction _fallbackPause;
-
-    // Instance ref to PlayerInputManager for join events (non-static)
-    private PlayerInputManager _pim;
+    private bool isPaused;
+    private InputAction pauseAction;
 
     void Awake()
     {
+        // root is visible only when paused
         if (pauseMenuRoot) pauseMenuRoot.SetActive(false);
+        if (mainButtonsPanel) mainButtonsPanel.SetActive(true);
         if (controlsPanel) controlsPanel.SetActive(false);
-        if (rulesPanel)    rulesPanel.SetActive(false);
+        if (rulesPanel) rulesPanel.SetActive(false);
 
         Time.timeScale = 1f;
         AudioListener.pause = false;
@@ -36,122 +31,120 @@ public class PauseMenu : MonoBehaviour
 
     void OnEnable()
     {
-        // Subscribe to existing players (use the non-obsolete API)
-        var players = Object.FindObjectsByType<PlayerInput>(FindObjectsSortMode.None);
-        foreach (var pi in players)
-            SubscribePlayer(pi);
-
-        // Subscribe to future joins via the INSTANCE of PlayerInputManager
-        _pim = Object.FindAnyObjectByType<PlayerInputManager>();
-        if (_pim != null)
+        if (pauseAction == null)
         {
-            // was: _pim.playerJoinedEvent += SubscribePlayer;
-            _pim.playerJoinedEvent.AddListener(SubscribePlayer);
+            pauseAction = new InputAction(type: InputActionType.Button);
+
+            // Keyboard
+            pauseAction.AddBinding("<Keyboard>/escape");
+
+            // Gamepad
+            pauseAction.AddBinding("<Gamepad>/start");       // menu/options
+            pauseAction.AddBinding("<Gamepad>/buttonEast");  // B button
         }
 
-
-        // Global fallback (Esc/Start) if no action reference provided
-        if (pauseActionRef == null)
-        {
-            _fallbackPause = new InputAction(type: InputActionType.Button);
-            _fallbackPause.AddBinding("<Keyboard>/escape");
-            _fallbackPause.AddBinding("<Gamepad>/start");
-            _fallbackPause.performed += OnPausePerformed;
-            _fallbackPause.Enable();
-        }
-        else
-        {
-            pauseActionRef.action.performed += OnPausePerformed;
-            pauseActionRef.action.Enable();
-        }
+        pauseAction.performed += OnPausePerformed;
+        pauseAction.Enable();
     }
 
     void OnDisable()
     {
-        if (_pim != null)
+        if (pauseAction != null)
         {
-            // was: _pim.playerJoinedEvent -= SubscribePlayer;
-            _pim.playerJoinedEvent.RemoveListener(SubscribePlayer);
-            _pim = null;
+            pauseAction.performed -= OnPausePerformed;
+            pauseAction.Disable();
         }
-
-
-        // Unhook per-player actions
-        foreach (var act in _subscribedPlayerActions)
-            act.performed -= OnPausePerformed;
-        _subscribedPlayerActions.Clear();
-
-        // Tear down fallback
-        if (_fallbackPause != null)
-        {
-            _fallbackPause.performed -= OnPausePerformed;
-            _fallbackPause.Disable();
-            _fallbackPause.Dispose();
-            _fallbackPause = null;
-        }
-
-        if (pauseActionRef != null)
-            pauseActionRef.action.performed -= OnPausePerformed;
     }
 
-    private void SubscribePlayer(PlayerInput pi)
+    void OnDestroy()
     {
-        if (pi != null && pi.actions != null)
+        if (pauseAction != null)
         {
-            var pause = pi.actions.FindAction("Pause", throwIfNotFound: false);
-            if (pause != null)
-            {
-                pause.performed += OnPausePerformed;
-                if (!pause.enabled) pause.Enable();
-                _subscribedPlayerActions.Add(pause);
-            }
+            pauseAction.Dispose();
+            pauseAction = null;
         }
     }
 
     private void OnPausePerformed(InputAction.CallbackContext ctx)
     {
-        if (!isPaused) Pause();
-        else Resume(); // toggle
+        // Not paused yet? → open menu
+        if (!isPaused)
+        {
+            Pause();
+            return;
+        }
+
+        // Already paused:
+        bool inSubpanel =
+            (controlsPanel && controlsPanel.activeSelf) ||
+            (rulesPanel && rulesPanel.activeSelf);
+
+        if (inSubpanel)
+        {
+            // B / Esc while viewing Controls/Rules → go back to main pause screen
+            BackFromSubpanel();
+        }
+        else
+        {
+            // B / Esc / Start on main pause screen → resume game
+            Resume();
+        }
     }
 
     public void Pause()
     {
         isPaused = true;
-        if (pauseMenuRoot) pauseMenuRoot.SetActive(true);
-        if (controlsPanel) controlsPanel.SetActive(false);
-        if (rulesPanel)    rulesPanel.SetActive(false);
 
-        Time.timeScale = 0f;         // freeze game
-        AudioListener.pause = true;  // pause audio
+        if (pauseMenuRoot) pauseMenuRoot.SetActive(true);
+        if (mainButtonsPanel) mainButtonsPanel.SetActive(true);
+        if (controlsPanel) controlsPanel.SetActive(false);
+        if (rulesPanel) rulesPanel.SetActive(false);
+
+        Time.timeScale = 0f;
+        AudioListener.pause = true;
+
+        SetSelected(firstMainButton);
     }
 
     public void Resume()
     {
         isPaused = false;
-        if (pauseMenuRoot) pauseMenuRoot.SetActive(false);
-        if (controlsPanel) controlsPanel.SetActive(false);
-        if (rulesPanel)    rulesPanel.SetActive(false);
 
-        Time.timeScale = 1f;         // unfreeze
+        if (pauseMenuRoot) pauseMenuRoot.SetActive(false);
+        if (mainButtonsPanel) mainButtonsPanel.SetActive(true);
+        if (controlsPanel) controlsPanel.SetActive(false);
+        if (rulesPanel) rulesPanel.SetActive(false);
+
+        Time.timeScale = 1f;
         AudioListener.pause = false;
+
+        // Clear selection so gameplay UI / world input can take over
+        SetSelected(null);
     }
 
     public void ShowControls()
     {
+        if (mainButtonsPanel) mainButtonsPanel.SetActive(false);
         if (controlsPanel) controlsPanel.SetActive(true);
-        if (rulesPanel)    rulesPanel.SetActive(false);
+        if (rulesPanel) rulesPanel.SetActive(false);
+
     }
 
     public void ShowRules()
     {
-        if (rulesPanel)    rulesPanel.SetActive(true);
+        if (mainButtonsPanel) mainButtonsPanel.SetActive(false);
+        if (rulesPanel) rulesPanel.SetActive(true);
         if (controlsPanel) controlsPanel.SetActive(false);
+
     }
 
     public void BackFromSubpanel()
     {
         if (controlsPanel) controlsPanel.SetActive(false);
-        if (rulesPanel)    rulesPanel.SetActive(false);
+        if (rulesPanel) rulesPanel.SetActive(false);
+        if (mainButtonsPanel) mainButtonsPanel.SetActive(true);
+
+        SetSelected(firstMainButton);
     }
 
     public void QuitGame()
@@ -161,5 +154,14 @@ public class PauseMenu : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    private void SetSelected(GameObject go)
+    {
+        if (EventSystem.current == null) return;
+
+        EventSystem.current.SetSelectedGameObject(null);
+        if (go != null)
+            EventSystem.current.SetSelectedGameObject(go);
     }
 }
