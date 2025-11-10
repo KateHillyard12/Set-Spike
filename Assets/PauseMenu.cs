@@ -29,6 +29,8 @@ public class PauseMenu : MonoBehaviour
         AudioListener.pause = false;
     }
 
+
+
     void OnEnable()
     {
         if (pauseAction == null)
@@ -155,6 +157,16 @@ public class PauseMenu : MonoBehaviour
         Application.Quit();
 #endif
     }
+
+    public bool IsPaused => isPaused;
+
+    public void TogglePauseFromExternal()
+    {
+        if (!isPaused) Pause();
+        else           Resume();
+    }
+
+
 
     private void SetSelected(GameObject go)
     {
