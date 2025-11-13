@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class MainMenuController : MonoBehaviour
@@ -31,13 +30,26 @@ public class MainMenuController : MonoBehaviour
         closeRulesButton = root.Q<Button>("close-rules");
         closeSettingsButton = root.Q<Button>("close-settings");
 
-        playButton.clicked += OnPlayClicked;
-        rulesButton.clicked += ShowRulesPanel;
-        settingsButton.clicked += ShowSettingsPanel;
-        quitButton.clicked += OnQuitClicked;
+        // Subscribe safely and log missing elements to help debugging
+        if (playButton != null) playButton.clicked += OnPlayClicked; else Debug.LogWarning("MainMenuController: 'play-button' not found in UIDocument.");
+        if (rulesButton != null) rulesButton.clicked += ShowRulesPanel; else Debug.LogWarning("MainMenuController: 'rules-button' not found in UIDocument.");
+        if (settingsButton != null) settingsButton.clicked += ShowSettingsPanel; else Debug.LogWarning("MainMenuController: 'settings-button' not found in UIDocument.");
+        if (quitButton != null) quitButton.clicked += OnQuitClicked; else Debug.LogWarning("MainMenuController: 'quit-button' not found in UIDocument.");
 
-        closeRulesButton.clicked += HideRulesPanel;
-        closeSettingsButton.clicked += HideSettingsPanel;
+        if (closeRulesButton != null) closeRulesButton.clicked += HideRulesPanel; else Debug.LogWarning("MainMenuController: 'close-rules' not found in UIDocument.");
+        if (closeSettingsButton != null) closeSettingsButton.clicked += HideSettingsPanel; else Debug.LogWarning("MainMenuController: 'close-settings' not found in UIDocument.");
+    }
+
+    void OnDisable()
+    {
+        // Unsubscribe to avoid duplicate handlers when component is re-enabled
+        if (playButton != null) playButton.clicked -= OnPlayClicked;
+        if (rulesButton != null) rulesButton.clicked -= ShowRulesPanel;
+        if (settingsButton != null) settingsButton.clicked -= ShowSettingsPanel;
+        if (quitButton != null) quitButton.clicked -= OnQuitClicked;
+
+        if (closeRulesButton != null) closeRulesButton.clicked -= HideRulesPanel;
+        if (closeSettingsButton != null) closeSettingsButton.clicked -= HideSettingsPanel;
     }
 
     private void OnPlayClicked()
@@ -48,22 +60,26 @@ public class MainMenuController : MonoBehaviour
 
     private void ShowRulesPanel()
     {
-        rulesPanel.RemoveFromClassList("hidden");
+        if (rulesPanel != null) rulesPanel.RemoveFromClassList("hidden");
+        else Debug.LogWarning("MainMenuController: Attempted to show rules panel but 'rules-panel' VisualElement is missing.");
     }
 
     private void HideRulesPanel()
     {
-        rulesPanel.AddToClassList("hidden");
+        if (rulesPanel != null) rulesPanel.AddToClassList("hidden");
+        else Debug.LogWarning("MainMenuController: Attempted to hide rules panel but 'rules-panel' VisualElement is missing.");
     }
 
     private void ShowSettingsPanel()
     {
-        settingsPanel.RemoveFromClassList("hidden");
+        if (settingsPanel != null) settingsPanel.RemoveFromClassList("hidden");
+        else Debug.LogWarning("MainMenuController: Attempted to show settings panel but 'settings-panel' VisualElement is missing.");
     }
 
     private void HideSettingsPanel()
     {
-        settingsPanel.AddToClassList("hidden");
+        if (settingsPanel != null) settingsPanel.AddToClassList("hidden");
+        else Debug.LogWarning("MainMenuController: Attempted to hide settings panel but 'settings-panel' VisualElement is missing.");
     }
 
     private void OnQuitClicked()
