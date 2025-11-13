@@ -8,12 +8,20 @@ public class BallController : MonoBehaviour
     [HideInInspector] public LayerMask groundLayer;
     [HideInInspector] public float laneZ = 0f;
 
+    [HideInInspector] public float leftBoundaryX;
+    [HideInInspector] public float rightBoundaryX;
+
     [Header("Bounce")]
-    public float headBounceImpulse = 6f;     // extra pop when hitting a player
-    public float carryXFromPlayer = 0.5f;    // add a bit of player X velocity to the ball
-    public float maxSpeed = 18f;             // clamp so it doesn't go wild
+    public float headBounceImpulse = 6f;
+    public float carryXFromPlayer = 0.5f;
+    public float maxSpeed = 18f;
+
+    [Header("FX")]
+    [Tooltip("Sand particle prefab (SandBurst). Will be spawned on player contact.")]
+    public GameObject sandFXPrefab;
 
     Rigidbody rb;
+    bool scoredAlready = false;
 
     void Awake()
     {
@@ -34,32 +42,64 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // tiny clamp for sanity
+        if (scoredAlready) return;
+
+        // clamp crazy speed
         if (rb.linearVelocity.sqrMagnitude > maxSpeed * maxSpeed)
             rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
 
-        // keep z lane exact (in case something nudges it)
+        // keep z lane exact
         var p = rb.position;
         if (Mathf.Abs(p.z - laneZ) > 0.0001f)
             rb.position = new Vector3(p.x, p.y, laneZ);
+
+        // OUT OF BOUNDS CHECK
+        if (p.x < leftBoundaryX)
+        {
+            scoredAlready = true;
+            manager.PointScored(CourtSide.Left);
+            return;
+        }
+
+        if (p.x > rightBoundaryX)
+        {
+            scoredAlready = true;
+            manager.PointScored(CourtSide.Right);
+            return;
+        }
     }
 
     void OnCollisionEnter(Collision c)
     {
-        // 1) Ground = point for opposite side
+        if (scoredAlready) return;
+
+        // 1) Ground contact ends rally
         if (((1 << c.gameObject.layer) & groundLayer) != 0)
         {
             float hitX = c.GetContact(0).point.x;
             bool leftSide = hitX < net.position.x;
+
+            scoredAlready = true;
             manager.PointScored(leftSide ? CourtSide.Left : CourtSide.Right);
             return;
         }
 
-        // 2) Player bounce boost
-        //    If the collider belongs to a Player (has PlayerMovement2D or tagged "Player"), add upward impulse + a bit of their X velocity.
+        // 2) Player contact: bounce AND sand poof
         var mover = c.collider.GetComponentInParent<PlayerMovement2D>();
         if (mover != null)
         {
+            // spawn sand at first contact point
+            if (sandFXPrefab != null)
+            {
+                ContactPoint cp = c.GetContact(0);
+                Vector3 fxPos = cp.point;
+
+                // lock Z so it stays in lane visually
+                fxPos.z = laneZ;
+
+                Instantiate(sandFXPrefab, fxPos, Quaternion.identity);
+            }
+
             // clear downward velocity so hits feel crisp
             Vector3 v = rb.linearVelocity;
             v.y = Mathf.Max(0f, v.y);
@@ -68,7 +108,7 @@ public class BallController : MonoBehaviour
             // add upward impulse
             rb.AddForce(Vector3.up * headBounceImpulse, ForceMode.VelocityChange);
 
-            // carry some of player's horizontal to the ball
+            // carry some horizontal from player
             var prb = mover.GetComponent<Rigidbody>();
             if (prb != null)
                 rb.AddForce(new Vector3(prb.linearVelocity.x * carryXFromPlayer, 0f, 0f), ForceMode.VelocityChange);

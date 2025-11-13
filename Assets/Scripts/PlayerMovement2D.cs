@@ -12,12 +12,18 @@ public class PlayerMovement2D : MonoBehaviour
     public float jumpForce = 7.5f;
 
     [Header("Ground Check (3D)")]
-    public Transform groundCheck;         // place at feet
+    public Transform groundCheck;        
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
     [Header("2.5D Lane Lock")]
     public float laneZ = 0f;              // keep player on this Z
+
+    [Header("FX")]
+    [Tooltip("Sand burst particle prefab (the same SandBurst prefab you made).")]
+    public GameObject sandFXPrefab;
+    [Tooltip("Vertical offset from groundCheck to place the puff so it isn't clipping.")]
+    public float jumpFXYOffset = 0.05f;
 
     // --- internals ---
     Rigidbody rb;
@@ -49,9 +55,22 @@ public class PlayerMovement2D : MonoBehaviour
         // Jump
         if (jumpQueued && isGrounded)
         {
+            // --- spawn sand puff right as they jump off the ground ---
+            if (sandFXPrefab != null && groundCheck != null)
+            {
+                Vector3 fxPos = groundCheck.position;
+                fxPos.y += jumpFXYOffset; // raise a tiny bit so it’s visible
+                fxPos.z = laneZ;          // keep in lane visually
+
+                Instantiate(sandFXPrefab, fxPos, Quaternion.identity);
+            }
+
+            // zero downward velocity first for consistent pop
             var v = rb.linearVelocity;
-            v.y = 0f;                 // consistent jump height
+            v.y = 0f;
             rb.linearVelocity = v;
+
+            // apply jump impulse
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         }
         jumpQueued = false;
@@ -79,7 +98,7 @@ public class PlayerMovement2D : MonoBehaviour
         }
     }
 
-    // -------- Input System (supports both modes) --------
+    // -------- Input System --------
     // Send Messages signatures:
     public void OnMove(InputValue value) { moveInput = value.Get<Vector2>(); }
     public void OnJump(InputValue value) { if (value.isPressed) jumpQueued = true; }

@@ -8,8 +8,8 @@ PhysicsMaterial:
   m_PrefabAsset: {fileID: 0}
   m_Name: Ball
   serializedVersion: 2
-  m_DynamicFriction: 15.62
-  m_StaticFriction: 7.52
-  m_Bounciness: 0.46
+  m_DynamicFriction: 0.64
+  m_StaticFriction: 0.76
+  m_Bounciness: 1
   m_FrictionCombine: 0
   m_BounceCombine: 1

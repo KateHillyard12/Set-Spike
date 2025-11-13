@@ -6,8 +6,8 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] private GameObject controlsPanel;
     [SerializeField] private GameObject rulesPanel;
-    [SerializeField] private string gameSceneName = "Game"; // set your game scene name
-
+    [SerializeField] private string gameSceneName = "Game"; 
+    
     void Awake()
     {
         Time.timeScale = 1f;

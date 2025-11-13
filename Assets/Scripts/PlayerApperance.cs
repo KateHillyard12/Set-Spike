@@ -10,7 +10,6 @@ public class PlayerAppearance : MonoBehaviour
 
     private GameObject spawnedModel;
 
-    // Apply only a material tint (simple case)
     public void Apply(Material mat)
     {
         if ((tintRenderers == null || tintRenderers.Length == 0))
@@ -25,8 +24,7 @@ public class PlayerAppearance : MonoBehaviour
             r.sharedMaterials = mats;
         }
     }
-
-    // Optional overload if you later want to swap models too
+   //overload
     public void Apply(Material mat, GameObject modelPrefab)
     {
         if (modelPrefab && modelAnchor)
