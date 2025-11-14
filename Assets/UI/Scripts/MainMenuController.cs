@@ -55,7 +55,7 @@ public class MainMenuController : MonoBehaviour
     private void OnPlayClicked()
     {
         Debug.Log("Play pressed");
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("Main");
     }
 
     private void ShowRulesPanel()
