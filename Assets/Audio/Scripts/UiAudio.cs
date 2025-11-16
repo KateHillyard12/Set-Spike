@@ -26,7 +26,7 @@ public class UiAudio : MonoBehaviour
     [Range(0f,1f)] public float sfxVolume = 1f;
 
     [Header("Music Fade")]
-    public float fadeTime = 0.45f;
+    public float fadeTime = 0.15f;
 
     // Runtime lists so we can unregister callbacks
     private UIDocument doc;

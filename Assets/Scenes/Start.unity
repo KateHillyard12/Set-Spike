@@ -1030,7 +1030,7 @@ MonoBehaviour:
   quitClip: {fileID: 0}
   musicVolume: 0.65
   sfxVolume: 1
-  fadeTime: 0.45
+  fadeTime: 0.15
 --- !u!1 &1112330058
 GameObject:
   m_ObjectHideFlags: 0
