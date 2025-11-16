@@ -982,6 +982,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 923865695}
+  - component: {fileID: 923865696}
   m_Layer: 0
   m_Name: MainMenuUI
   m_TagString: Untagged
@@ -1005,6 +1006,31 @@ Transform:
   - {fileID: 2072165754}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &923865696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923865694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361a7e2f8f9fdc548a9acd1168881be3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  mainMenuMusic: {fileID: 8300000, guid: 6a23c40a65c1d6848840bbb1fae45b50, type: 3}
+  rulesPanelMusic: {fileID: 0}
+  settingsPanelMusic: {fileID: 0}
+  hoverSfx: {fileID: 8300000, guid: c1c145dfc8d596a4499cca20b4330874, type: 3}
+  buttonClip: {fileID: 8300000, guid: 438563eaf8f13804c897b6d46d2b6cc7, type: 3}
+  closeClip: {fileID: 0}
+  playClip: {fileID: 0}
+  quitClip: {fileID: 0}
+  musicVolume: 0.65
+  sfxVolume: 1
+  fadeTime: 0.45
 --- !u!1 &1112330058
 GameObject:
   m_ObjectHideFlags: 0
