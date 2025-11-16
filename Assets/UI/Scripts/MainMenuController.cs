@@ -14,6 +14,8 @@ public class MainMenuController : MonoBehaviour
 
     private VisualElement rulesPanel;
     private VisualElement settingsPanel;
+    private VisualElement topPanel;
+    private VisualElement mainSection;
 
     void OnEnable()
     {
@@ -30,7 +32,10 @@ public class MainMenuController : MonoBehaviour
         closeRulesButton = root.Q<Button>("close-rules");
         closeSettingsButton = root.Q<Button>("close-settings");
 
-        // Subscribe safely and log missing elements to help debugging
+        topPanel = root.Q<VisualElement>("TopPannel");
+        mainSection = root.Q<VisualElement>("Main");
+
+        // Subscribe and log missing elements to help debugging
         if (playButton != null) playButton.clicked += OnPlayClicked; else Debug.LogWarning("MainMenuController: 'play-button' not found in UIDocument.");
         if (rulesButton != null) rulesButton.clicked += ShowRulesPanel; else Debug.LogWarning("MainMenuController: 'rules-button' not found in UIDocument.");
         if (settingsButton != null) settingsButton.clicked += ShowSettingsPanel; else Debug.LogWarning("MainMenuController: 'settings-button' not found in UIDocument.");
@@ -60,25 +65,46 @@ public class MainMenuController : MonoBehaviour
 
     private void ShowRulesPanel()
     {
-        if (rulesPanel != null) rulesPanel.RemoveFromClassList("hidden");
+        if (rulesPanel != null)
+        {
+            // show rules hide start sections
+            rulesPanel.style.display = DisplayStyle.Flex;
+            if (topPanel != null) topPanel.style.display = DisplayStyle.None;
+            if (mainSection != null) mainSection.style.display = DisplayStyle.None;
+        }
         else Debug.LogWarning("MainMenuController: Attempted to show rules panel but 'rules-panel' VisualElement is missing.");
     }
 
     private void HideRulesPanel()
     {
-        if (rulesPanel != null) rulesPanel.AddToClassList("hidden");
+        if (rulesPanel != null)
+        {
+            rulesPanel.style.display = DisplayStyle.None;
+            if (topPanel != null) topPanel.style.display = DisplayStyle.Flex;
+            if (mainSection != null) mainSection.style.display = DisplayStyle.Flex;
+        }
         else Debug.LogWarning("MainMenuController: Attempted to hide rules panel but 'rules-panel' VisualElement is missing.");
     }
 
     private void ShowSettingsPanel()
     {
-        if (settingsPanel != null) settingsPanel.RemoveFromClassList("hidden");
+        if (settingsPanel != null)
+        {
+            settingsPanel.style.display = DisplayStyle.Flex;
+            if (topPanel != null) topPanel.style.display = DisplayStyle.None;
+            if (mainSection != null) mainSection.style.display = DisplayStyle.None;
+        }
         else Debug.LogWarning("MainMenuController: Attempted to show settings panel but 'settings-panel' VisualElement is missing.");
     }
 
     private void HideSettingsPanel()
     {
-        if (settingsPanel != null) settingsPanel.AddToClassList("hidden");
+        if (settingsPanel != null)
+        {
+            settingsPanel.style.display = DisplayStyle.None;
+            if (topPanel != null) topPanel.style.display = DisplayStyle.Flex;
+            if (mainSection != null) mainSection.style.display = DisplayStyle.Flex;
+        }
         else Debug.LogWarning("MainMenuController: Attempted to hide settings panel but 'settings-panel' VisualElement is missing.");
     }
 

@@ -56,7 +56,6 @@ Button:hover {
     justify-content: center;
 }
 
-/* Color palette (from provided image) */
 /* Coral:   #FF7F7F */
 /* Pale:    #FCEAEA */
 /* Hot:     #FF3E87 */
@@ -64,7 +63,7 @@ Button:hover {
 /* Cyan:    #00B5FF */
 
 #rules-panel {
-    /* Pale background with a hot-pink accent */
+
     background-color: #FCEAEA;
     border-left-width: 8px;
     border-left-color: #FF3E87;
@@ -75,7 +74,6 @@ Button:hover {
     align-items: flex-start;
     justify-content: flex-start;
     color: #333333;
-    /* soft drop via subtle border */
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -86,7 +84,7 @@ Button:hover {
 }
 
 #rules-label {
-    color: #FF3E87; /* hot pink title */
+    color: #FF3E87; 
     font-size: 48px;
     -unity-font-style: bold;
     margin-right: 16px;
@@ -97,8 +95,8 @@ Button:hover {
 #discription {
     color: #333333;
     font-size: 24px;
-    /* ensure description wraps and is readable */
     white-space: normal;
     margin-top: 6px;
     line-height: 1.4;
+    
 }
