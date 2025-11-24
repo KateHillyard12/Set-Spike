@@ -4751,7 +4751,7 @@ MonoBehaviour:
   despawnExtraX: 8
   minSpawnDelay: 5
   maxSpawnDelay: 12
-  onlyOneAtATime: 1
+  onlyOneAtATime: 0
 --- !u!4 &1613192622 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: e6630d62478f89847ba57d087ab513c5, type: 3}

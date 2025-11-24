@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 12001e8d5a714eb49ab652fe0e3111a0, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 0.1591112
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12001e8d5a714eb49ab652fe0e3111a0, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.1591112
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12001e8d5a714eb49ab652fe0e3111a0, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 0.1591112
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12001e8d5a714eb49ab652fe0e3111a0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetGroupTag: CamTargetGroup
   weight: 1
-  radius: 5
+  radius: 4
 --- !u!65 &7712026562237242993
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -189,8 +189,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 20.374998, y: 5.341217, z: 17.288624}
-  m_Center: {x: 0.18821335, y: -0.32707822, z: 7.0525494}
+  m_Size: {x: 20.374998, y: 18.279587, z: 4.9197426}
+  m_Center: {x: 0.18821335, y: -2.5234075, z: -9.24542}
 --- !u!54 &1903088008904792053
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
   bobAmplitude: 0.3
   bobFrequency: 2
   destroyOnBallHit: 1
-  hitVFXPrefab: {fileID: 0}
+  hitVFXPrefab: {fileID: 7255104566424645406, guid: 7324fceaaaccd8c44abff66c7531b2de, type: 3}
   destroyDelayAfterHit: 0.1
   rightFacingEuler: {x: 0, y: 90, z: 0}
   leftFacingEuler: {x: 0, y: -90, z: 0}

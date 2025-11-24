@@ -103,6 +103,7 @@ public class SeagullController : MonoBehaviour
         if (hitVFXPrefab != null)
         {
             Vector3 spawnPos = transform.position;
+            spawnPos += Camera.main.transform.forward * -2.0f;
             if (collision.contactCount > 0)
                 spawnPos = collision.GetContact(0).point;
 
