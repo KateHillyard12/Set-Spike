@@ -369,7 +369,7 @@ MonoBehaviour:
     m_Value: 0
   scatter:
     m_OverrideState: 1
-    m_Value: 0.7
+    m_Value: 0.891
   clamp:
     m_OverrideState: 1
     m_Value: 65472
@@ -407,10 +407,10 @@ MonoBehaviour:
   active: 1
   temperature:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 59
   tint:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 3
 --- !u!114 &-581120513425526550
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -805,22 +805,22 @@ MonoBehaviour:
     m_Value: 0
   focusDistance:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 0.1
   aperture:
     m_OverrideState: 1
     m_Value: 5.6
   focalLength:
     m_OverrideState: 1
-    m_Value: 50
+    m_Value: 125
   bladeCount:
     m_OverrideState: 1
-    m_Value: 5
+    m_Value: 6
   bladeCurvature:
     m_OverrideState: 1
     m_Value: 1
   bladeRotation:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: -93
 --- !u!114 &4251301726029935498
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -890,7 +890,7 @@ MonoBehaviour:
     m_Value: 0
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.134
   rounded:
     m_OverrideState: 1
     m_Value: 0
@@ -937,10 +937,10 @@ MonoBehaviour:
   active: 1
   redOutRedIn:
     m_OverrideState: 1
-    m_Value: 100
+    m_Value: 116
   redOutGreenIn:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: -3
   redOutBlueIn:
     m_OverrideState: 1
     m_Value: 0
