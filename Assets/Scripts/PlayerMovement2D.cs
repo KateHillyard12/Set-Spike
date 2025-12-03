@@ -27,6 +27,7 @@ public class PlayerMovement2D : MonoBehaviour
 
     // --- internals ---
     Rigidbody rb;
+    Animator anim;
     Vector2 moveInput;
     bool jumpQueued;
     bool isGrounded;
@@ -36,8 +37,11 @@ public class PlayerMovement2D : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        // Freeze Z / Rot XZ in the Rigidbody constraints from the Inspector.
+
+        // Was: anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
     }
+
 
     void Update()
     {
@@ -52,34 +56,53 @@ public class PlayerMovement2D : MonoBehaviour
             );
         }
 
+        // Reset jump animation once grounded
+        if (isGrounded)
+        {
+            if (anim != null)
+            anim.SetBool("IsJumping", false);
+
+        }
+
         // Jump
         if (jumpQueued && isGrounded)
         {
-            // --- spawn sand puff right as they jump off the ground ---
+            // Sand FX at jump
             if (sandFXPrefab != null && groundCheck != null)
             {
                 Vector3 fxPos = groundCheck.position;
-                fxPos.y += jumpFXYOffset; // raise a tiny bit so it’s visible
-                fxPos.z = laneZ;          // keep in lane visually
+                fxPos.y += jumpFXYOffset;
+                fxPos.z = laneZ;
 
                 Instantiate(sandFXPrefab, fxPos, Quaternion.identity);
             }
 
-            // zero downward velocity first for consistent pop
+            if (anim != null)
+            anim.SetBool("IsJumping", true);
+
+
+            // zero downward velocity
             var v = rb.linearVelocity;
             v.y = 0f;
             rb.linearVelocity = v;
 
-            // apply jump impulse
+            // Apply jump
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         }
+
         jumpQueued = false;
 
         // Lock to lane Z
         var p = rb.position;
         if (Mathf.Abs(p.z - laneZ) > 0.0001f)
             rb.position = new Vector3(p.x, p.y, laneZ);
+
+        // Animator movement parameter
+        if (anim != null)
+        anim.SetFloat("MoveX", moveInput.x);
+
     }
+
 
     void FixedUpdate()
     {
