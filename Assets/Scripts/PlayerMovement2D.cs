@@ -101,6 +101,13 @@ public class PlayerMovement2D : MonoBehaviour
         if (anim != null)
         anim.SetFloat("MoveX", moveInput.x);
 
+        if (VolleyballGameManager.freezePlayers)
+        {
+            moveInput = Vector2.zero;
+            return;
+        }
+
+
     }
 
 
@@ -119,12 +126,29 @@ public class PlayerMovement2D : MonoBehaviour
             var s = transform.localScale;
             transform.localScale = new Vector3(Mathf.Abs(s.x) * dir, s.y, s.z);
         }
+
+        if (VolleyballGameManager.freezePlayers)
+        {
+            rb.linearVelocity = Vector3.zero;
+            return;
+        }
+
     }
 
     // -------- Input System --------
     // Send Messages signatures:
-    public void OnMove(InputValue value) { moveInput = value.Get<Vector2>(); }
-    public void OnJump(InputValue value) { if (value.isPressed) jumpQueued = true; }
+    public void OnMove(InputValue value)
+     { 
+        moveInput = value.Get<Vector2>();
+        if (VolleyballGameManager.freezePlayers) return;
+
+     }
+    public void OnJump(InputValue value) 
+    { 
+        if (value.isPressed) jumpQueued = true; 
+        if (VolleyballGameManager.freezePlayers) return;
+
+    }
 
     // Unity Events signatures:
     public void OnMove(InputAction.CallbackContext ctx) { moveInput = ctx.ReadValue<Vector2>(); }
