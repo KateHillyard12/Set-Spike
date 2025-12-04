@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 8276157096564bb499b61d96ce24a5bb, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 21a36d82acebcee4bb243df0ca75cb32, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -668,13 +668,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 209513947}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 3, y: 0, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1315949310}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &228844126
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3148,8 +3148,8 @@ MonoBehaviour:
   portName: COM4
   baudRate: 9600
   readTimeoutMs: 25
-  autoJoinArduinoPlayer: 1
-  desiredPlayerIndex: -1
+  autoJoinArduinoPlayer: 0
+  desiredPlayerIndex: 1
 --- !u!4 &1121872604
 Transform:
   m_ObjectHideFlags: 0
@@ -5131,7 +5131,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb3002e3907cc534a877db732d5ae187, type: 2}
+  - {fileID: 2100000, guid: 867ec64eba6038b4e95709fa94008027, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -123,9 +123,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.0127331
-  m_Height: 2.8004322
+  m_Height: 2.293316
   m_Direction: 1
-  m_Center: {x: 0, y: -0.98860407, z: 0}
+  m_Center: {x: 0, y: -1.2421622, z: 0}
 --- !u!54 &6943959432697172864
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -178,9 +178,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
+  m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 
+  m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &4476598980930533401
@@ -218,7 +218,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c3770c9d6e8ea4ba135da33545e847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tintRenderers: []
+  tintRenderers:
+  - {fileID: 9151002359632434483}
   modelAnchor: {fileID: 2910926224960620745}
 --- !u!114 &1481311518862930882
 MonoBehaviour:
@@ -267,15 +268,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.6
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.6
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.6
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
       propertyPath: m_LocalPosition.x
@@ -370,5 +371,10 @@ PrefabInstance:
 --- !u!4 &982951142687668038 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
+  m_PrefabInstance: {fileID: 733697126769037485}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &9151002359632434483 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8417361359673230750, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
   m_PrefabInstance: {fileID: 733697126769037485}
   m_PrefabAsset: {fileID: 0}
