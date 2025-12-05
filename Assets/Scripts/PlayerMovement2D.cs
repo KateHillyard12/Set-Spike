@@ -29,8 +29,10 @@ public class PlayerMovement2D : MonoBehaviour
     Rigidbody rb;
     Animator anim;
     Vector2 moveInput;
-    bool jumpQueued;
     bool isGrounded;
+
+    float jumpBufferTimer = 0f;
+    public float jumpBufferTime = 0.12f;
 
     void Awake()
     {
@@ -56,18 +58,28 @@ public class PlayerMovement2D : MonoBehaviour
             );
         }
 
-        // Reset jump animation once grounded
+        // Jump
+        // Reset jump anim on ground
         if (isGrounded)
         {
             if (anim != null)
-            anim.SetBool("IsJumping", false);
-
+                anim.ResetTrigger("Jump");
         }
 
-        // Jump
-        if (jumpQueued && isGrounded)
+        // --------------------------------------
+        // Jump Buffer Countdown
+        // --------------------------------------
+        if (jumpBufferTimer > 0f)
+            jumpBufferTimer -= Time.deltaTime;
+
+        // --------------------------------------
+        // Jump Triggering Logic (Buffered)
+        // --------------------------------------
+        if (jumpBufferTimer > 0f && isGrounded)
         {
-            // Sand FX at jump
+            jumpBufferTimer = 0f;
+
+            // Sand puff
             if (sandFXPrefab != null && groundCheck != null)
             {
                 Vector3 fxPos = groundCheck.position;
@@ -77,20 +89,18 @@ public class PlayerMovement2D : MonoBehaviour
                 Instantiate(sandFXPrefab, fxPos, Quaternion.identity);
             }
 
+            // Trigger animation
             if (anim != null)
-            anim.SetBool("IsJumping", true);
+                anim.SetTrigger("Jump");
 
-
-            // zero downward velocity
+            // Zero downward momentum
             var v = rb.linearVelocity;
             v.y = 0f;
             rb.linearVelocity = v;
 
-            // Apply jump
+            // Jump force
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         }
-
-        jumpQueued = false;
 
         // Lock to lane Z
         var p = rb.position;
@@ -145,14 +155,21 @@ public class PlayerMovement2D : MonoBehaviour
      }
     public void OnJump(InputValue value) 
     { 
-        if (value.isPressed) jumpQueued = true; 
+        if (value.isPressed) jumpBufferTimer = jumpBufferTime; // store jump for buffer window
         if (VolleyballGameManager.freezePlayers) return;
 
     }
 
-    // Unity Events signatures:
-    public void OnMove(InputAction.CallbackContext ctx) { moveInput = ctx.ReadValue<Vector2>(); }
-    public void OnJump(InputAction.CallbackContext ctx) { if (ctx.performed) jumpQueued = true; }
+    public void OnMove(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
+    {
+        moveInput = ctx.ReadValue<Vector2>();
+    }
+
+    public void OnJump(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+            jumpBufferTimer = jumpBufferTime;
+    }
 
     void OnDrawGizmosSelected()
     {
@@ -162,6 +179,6 @@ public class PlayerMovement2D : MonoBehaviour
     }
 
     // --- External (e.g., Arduino) helpers ---
-    public void ExternalJump() => jumpQueued = true;
+    public void ExternalJump() => jumpBufferTimer = jumpBufferTime;
     public void ExternalMove(float x) => moveInput = new Vector2(Mathf.Clamp(x, -1f, 1f), 0f);
 }

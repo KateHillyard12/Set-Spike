@@ -4707,7 +4707,7 @@ MonoBehaviour:
   serveSpeedX: 8
   serveSpeedY: 2
   respawnDelay: 1.25
-  winScore: 1
+  winScore: 5
   p1Text: {fileID: 1914571592}
   p2Text: {fileID: 1107298425}
   bannerText: {fileID: 819338540}
