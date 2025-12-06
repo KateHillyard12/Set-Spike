@@ -39,17 +39,35 @@ public class VolleyballGameManager : MonoBehaviour
     public TMP_Text bannerText;         // "Player X WINS!"
     public float bannerSeconds = 3f;
     public bool reloadSceneOnWin = false;
+    [Header("Victory FX")]
+    public GameObject confettiPrefab;
+
 
     [Header("Start Gate & Countdown")]
     public int requiredPlayers = 2;
     public TMP_Text countdownText;      // big centered "3,2,1, Go!"
     public float preServeCountdown = 3f;
 
+    [Header("Victory Dances")]
+    public string[] victoryDanceTriggers;
+
+
     int p1Score, p2Score;
     BallController currentBall;
     bool matchOver;
     bool readyToServe;
     Coroutine countdownRoutine;
+
+    public CinemachineCamera vcam;
+    public float zoomFOV = 25f;
+    public float zoomSpeed = 3f;
+    private float originalFOV;
+
+    public static bool freezePlayers = false;
+    public MonoBehaviour groupFramingComponent;
+
+
+
 
     // If Left = left player will serve next. If Right = right player will serve next.
     CourtSide nextServeSide = CourtSide.Left;
@@ -58,6 +76,8 @@ public class VolleyballGameManager : MonoBehaviour
     {
         UpdateUI();
         TryStartCountdownWhenReady();
+        originalFOV = vcam.Lens.FieldOfView;
+
     }
 
     void Update()
@@ -178,14 +198,109 @@ public class VolleyballGameManager : MonoBehaviour
             }
 
             if (currentBall) Destroy(currentBall.gameObject);
-            StartCoroutine(RestartRoutine());
+
+            // NEW — trigger victory sequence
+            StartCoroutine(VictorySequence(p1Score > p2Score ? 0 : 1));
+
             return;
         }
+
 
         // rally over -> kill old ball, serve from the scoring side after a delay
         if (currentBall) Destroy(currentBall.gameObject);
         StartCoroutine(ServeLater());
     }
+
+    IEnumerator VictorySequence(int winningPlayerIndex)
+    {
+        // 1) Find the player
+        PlayerMovement2D[] players = FindObjectsByType<PlayerMovement2D>(FindObjectsSortMode.None);
+        PlayerMovement2D winner = null;
+        groupFramingComponent.enabled = false;
+
+
+        foreach (var p in players)
+        {
+            var pi = p.GetComponent<UnityEngine.InputSystem.PlayerInput>();
+            if (pi && pi.playerIndex == winningPlayerIndex)
+            {
+                winner = p;
+                break;
+            }
+        }
+
+        if (winner != null)
+        {
+            VolleyballGameManager.freezePlayers = true;  // <--- FREEZE MOVEMENT
+
+            TriggerCameraZoom(winner.transform);
+
+            var animator = winner.GetComponentInChildren<Animator>();
+            if (animator)
+                if (victoryDanceTriggers.Length > 0)
+                    {
+                        string selected = victoryDanceTriggers[
+                            Random.Range(0, victoryDanceTriggers.Length)
+                        ];
+                        animator.SetTrigger(selected);
+                    }
+
+
+
+            // confetti
+            Transform attachPoint = winner.transform.Find("ConfettiPoint");
+            if (attachPoint)
+                Instantiate(confettiPrefab, attachPoint.position, attachPoint.rotation, attachPoint);
+        }
+
+
+        // 5) wait same banner delay as before
+        yield return new WaitForSeconds(bannerSeconds);
+
+        // 6) continue the game reset you already had
+        StartCoroutine(RestartRoutine());
+    }
+
+    void TriggerCameraZoom(Transform winner)
+    {
+        StartCoroutine(ZoomCoroutine());
+    }
+
+    IEnumerator ZoomCoroutine()
+    {
+        if (!vcam) yield break;
+
+        var lens = vcam.Lens;
+
+        float startFOV = lens.FieldOfView;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * zoomSpeed;
+            lens.FieldOfView = Mathf.Lerp(startFOV, zoomFOV, t);
+            vcam.Lens = lens;
+            yield return null;
+        }
+    }
+
+    IEnumerator ResetCameraFOV()
+    {
+        if (!vcam) yield break;
+
+        var lens = vcam.Lens;
+        float start = lens.FieldOfView;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * zoomSpeed;
+            lens.FieldOfView = Mathf.Lerp(start, originalFOV, t);
+            vcam.Lens = lens;
+            yield return null;
+        }
+    }
+
 
     IEnumerator ServeLater()
     {
@@ -196,12 +311,19 @@ public class VolleyballGameManager : MonoBehaviour
     IEnumerator RestartRoutine()
     {
         yield return new WaitForSeconds(bannerSeconds);
+        StartCoroutine(ResetCameraFOV());
+        groupFramingComponent.enabled = true;
+
+
 
         if (reloadSceneOnWin)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             yield break;
         }
+
+        VolleyballGameManager.freezePlayers = false;
+
 
         // soft reset for rematch
         p1Score = 0;

@@ -20,10 +20,16 @@ public class PlayerAppearance : MonoBehaviour
         foreach (var r in tintRenderers)
         {
             var mats = r.sharedMaterials;
-            for (int i = 0; i < mats.Length; i++) mats[i] = mat;
+
+            // Only replace the BODY material (slot 1)
+            // Make sure this matches your mesh material order
+            if (mats.Length > 1)
+                mats[1] = mat;
+
             r.sharedMaterials = mats;
         }
     }
+
    //overload
     public void Apply(Material mat, GameObject modelPrefab)
     {
