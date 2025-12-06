@@ -395,6 +395,10 @@ PrefabInstance:
       propertyPath: m_AABB.m_Extent.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8417361359673230750, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5866666021909216657, guid: 95c870ab6d54c9845b96ade7d1f56511, type: 3}
     m_RemovedGameObjects: []
