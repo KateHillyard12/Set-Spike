@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - CamTargetGroup
   layers:
   - Default
   - TransparentFX
@@ -11,7 +12,7 @@ TagManager:
   - groundLayer
   - Water
   - UI
-  - 
+  - prop
   - 
   - 
   - 
@@ -50,3 +51,5 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
+  - prop
+  - Layer 9
