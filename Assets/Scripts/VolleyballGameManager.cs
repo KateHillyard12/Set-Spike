@@ -5,6 +5,7 @@ using TMPro;
 using System.Collections;
 using Unity.Cinemachine;
 
+
 public enum CourtSide { Left, Right }
 
 public class VolleyballGameManager : MonoBehaviour
@@ -14,6 +15,7 @@ public class VolleyballGameManager : MonoBehaviour
     public GameObject ballPrefab;
     public LayerMask groundLayer;
     public float laneZ = 0f;
+    public GameUIController uiController; // Drag the GameUIController here in inspector
 
     [Header("Player Spawns / Court")]
     public Transform leftSpawn;    // Player 1 home side
@@ -34,15 +36,11 @@ public class VolleyballGameManager : MonoBehaviour
 
     [Header("Scoring / Win")]
     public int winScore = 15;
-    public TMP_Text p1Text;
-    public TMP_Text p2Text;
-    public TMP_Text bannerText;         // "Player X WINS!"
     public float bannerSeconds = 3f;
     public bool reloadSceneOnWin = false;
 
     [Header("Start Gate & Countdown")]
     public int requiredPlayers = 2;
-    public TMP_Text countdownText;      // big centered "3,2,1, Go!"
     public float preServeCountdown = 3f;
 
     int p1Score, p2Score;
@@ -74,10 +72,10 @@ public class VolleyballGameManager : MonoBehaviour
     {
         if (GetJoinedCount() >= requiredPlayers)
             countdownRoutine = StartCoroutine(CountdownThenServe());
-        else if (countdownText)
+        else
         {
-            countdownText.gameObject.SetActive(true);
-            countdownText.text = "Waiting for players…";
+            // TODO: Add "Waiting for players" UI element in GameUI.uxml
+            if (uiController) uiController.ShowWaitingForPlayers();
         }
     }
 
@@ -95,26 +93,23 @@ public class VolleyballGameManager : MonoBehaviour
             if (GetJoinedCount() < requiredPlayers)
             {
                 // someone dipped, cancel
-                if (countdownText) countdownText.text = "Waiting for players…";
+                if (uiController) uiController.ShowWaitingForPlayers();
                 countdownRoutine = null;
                 yield break;
             }
 
-            if (countdownText)
-            {
-                countdownText.gameObject.SetActive(true);
-                countdownText.text = Mathf.CeilToInt(t).ToString();
-            }
+            if (uiController)
+                uiController.ShowCountdown(Mathf.CeilToInt(t));
 
             yield return new WaitForSeconds(1f);
             t -= 1f;
         }
 
-        if (countdownText)
+        if (uiController)
         {
-            countdownText.text = "Go!";
+            uiController.ShowCountdown(0); // Show "Go!"
             yield return new WaitForSeconds(0.5f);
-            countdownText.gameObject.SetActive(false);
+            uiController.HideCountdown();
         }
 
         readyToServe = true;
@@ -173,14 +168,12 @@ public class VolleyballGameManager : MonoBehaviour
         if (p1Score >= winScore || p2Score >= winScore)
         {
             matchOver = true;
-            string winner = p1Score > p2Score ? "Player 1" : "Player 2";
+            int winningPlayer = p1Score > p2Score ? 0 : 1;
 
-            if (bannerText)
-            {
-                bannerText.gameObject.SetActive(true);
-                bannerText.text = $"{winner} WINS!";
-                GameAudio.Instance?.PlayVictory(); //audio
-            }
+            if (uiController)
+                uiController.ShowVictoryBanner(winningPlayer);
+            
+            GameAudio.Instance?.PlayVictory();
 
             if (currentBall) Destroy(currentBall.gameObject);
             StartCoroutine(RestartRoutine());
@@ -212,7 +205,7 @@ public class VolleyballGameManager : MonoBehaviour
         p1Score = 0;
         p2Score = 0;
         UpdateUI();
-        if (bannerText) bannerText.gameObject.SetActive(false);
+        if (uiController) uiController.HideVictoryBanner();
 
         ResetPlayersToSpawns();
 
@@ -256,8 +249,7 @@ public class VolleyballGameManager : MonoBehaviour
 
     void UpdateUI()
     {
-        if (p1Text) p1Text.text = p1Score.ToString();
-        if (p2Text) p2Text.text = p2Score.ToString();
-        GameAudio.Instance?.PlayScore(); //audio
+        if (uiController) uiController.UpdateScores(p1Score, p2Score);
+        GameAudio.Instance?.PlayScore();
     }
 }
