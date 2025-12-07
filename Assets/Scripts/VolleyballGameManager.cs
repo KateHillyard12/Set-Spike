@@ -43,6 +43,13 @@ public class VolleyballGameManager : MonoBehaviour
     public int requiredPlayers = 2;
     public float preServeCountdown = 3f;
 
+    [Header("Victory Dances")]
+    public string[] victoryDanceTriggers;
+
+    [Header("Victory FX")]
+    public GameObject confettiPrefab;
+
+
     int p1Score, p2Score;
     BallController currentBall;
     bool matchOver;
@@ -51,27 +58,42 @@ public class VolleyballGameManager : MonoBehaviour
 
     //hank here
     // Global freeze used by PlayerMovement2D to lock input/motion during win sequences.
-    public static bool freezePlayers = false;
+    //public static bool freezePlayers = false;
 
     // If Left = left player will serve next. If Right = right player will serve next.
     CourtSide nextServeSide = CourtSide.Left;
+
+    public CinemachineCamera vcam;
+    public float zoomFOV = 25f;
+    public float zoomSpeed = 3f;
+    private float originalFOV;
+
+    public static bool freezePlayers = false;
+    public MonoBehaviour groupFramingComponent;
 
     void Start()
     {
         UpdateUI();
         TryStartCountdownWhenReady();
+        originalFOV = vcam.Lens.FieldOfView;
     }
 
     void Update()
     {
         if (!matchOver && !readyToServe && countdownRoutine == null)
             TryStartCountdownWhenReady();
+
     }
 
     void TryStartCountdownWhenReady()
     {
         if (GetJoinedCount() >= requiredPlayers)
+        {
+            //hank here
+            if (uiController) uiController.HideWaitingForPlayers();
+            //
             countdownRoutine = StartCoroutine(CountdownThenServe());
+        }
         else
         {
             // TODO: Add "Waiting for players" UI element in GameUI.uxml
@@ -84,6 +106,9 @@ public class VolleyballGameManager : MonoBehaviour
 
     IEnumerator CountdownThenServe()
     {
+        //hank here
+        if (uiController) uiController.HideWaitingForPlayers();
+
         // snap both players to their home spawns for fairness
         ResetPlayersToSpawns();
 
@@ -114,6 +139,8 @@ public class VolleyballGameManager : MonoBehaviour
 
         readyToServe = true;
         countdownRoutine = null;
+        //hank here
+        if (uiController) uiController.HideWaitingForPlayers();
         StartServe();
     }
 
@@ -129,13 +156,13 @@ public class VolleyballGameManager : MonoBehaviour
         var go = Instantiate(ballPrefab, spawnPos, Quaternion.identity);
 
         currentBall = go.GetComponent<BallController>();
-        currentBall.manager     = this;
-        currentBall.net         = net;
+        currentBall.manager = this;
+        currentBall.net = net;
         currentBall.groundLayer = groundLayer;
-        currentBall.laneZ       = laneZ;
+        currentBall.laneZ = laneZ;
 
         // give it boundaries so it can call out-of-bounds
-        currentBall.leftBoundaryX  = leftBoundaryX;
+        currentBall.leftBoundaryX = leftBoundaryX;
         currentBall.rightBoundaryX = rightBoundaryX;
 
         // launch toward the receiving player
@@ -147,20 +174,21 @@ public class VolleyballGameManager : MonoBehaviour
     {
         if (matchOver) return;
 
-        
 
-        if (groundSide == CourtSide.Left) 
+
+        if (groundSide == CourtSide.Left)
         {
             // ball hit left ground => RIGHT player scored
             p2Score++;
             nextServeSide = CourtSide.Right;
         }
-        else 
+        else
         {
             // ball hit right ground => LEFT player scored
             p1Score++;
             nextServeSide = CourtSide.Left;
         }
+
 
         UpdateUI();
 
@@ -169,10 +197,10 @@ public class VolleyballGameManager : MonoBehaviour
         {
             matchOver = true;
             int winningPlayer = p1Score > p2Score ? 0 : 1;
-
+            //hnak here
             if (uiController)
                 uiController.ShowVictoryBanner(winningPlayer);
-            
+
             GameAudio.Instance?.PlayVictory();
 
             if (currentBall) Destroy(currentBall.gameObject);
@@ -182,7 +210,99 @@ public class VolleyballGameManager : MonoBehaviour
 
         // rally over -> kill old ball, serve from the scoring side after a delay
         if (currentBall) Destroy(currentBall.gameObject);
-        StartCoroutine(ServeLater());
+        StartCoroutine(VictorySequence(p1Score > p2Score ? 0 : 1));
+
+        return;
+
+
+    }
+
+    IEnumerator VictorySequence(int winningPlayerIndex)
+    {
+        // 1) Find the player
+        PlayerMovement2D[] players = FindObjectsByType<PlayerMovement2D>(FindObjectsSortMode.None);
+        PlayerMovement2D winner = null;
+        groupFramingComponent.enabled = false;
+
+
+        foreach (var p in players)
+        {
+            var pi = p.GetComponent<UnityEngine.InputSystem.PlayerInput>();
+            if (pi && pi.playerIndex == winningPlayerIndex)
+            {
+                winner = p;
+                break;
+            }
+        }
+
+        if (winner != null)
+        {
+            VolleyballGameManager.freezePlayers = true;  // <--- FREEZE MOVEMENT
+
+            TriggerCameraZoom(winner.transform);
+
+            var animator = winner.GetComponentInChildren<Animator>();
+            if (animator)
+                if (victoryDanceTriggers.Length > 0)
+                {
+                    string selected = victoryDanceTriggers[
+                        Random.Range(0, victoryDanceTriggers.Length)
+                    ];
+                    animator.SetTrigger(selected);
+                }
+
+
+
+            // confetti
+            Transform attachPoint = winner.transform.Find("ConfettiPoint");
+            if (attachPoint)
+                Instantiate(confettiPrefab, attachPoint.position, attachPoint.rotation, attachPoint);
+        }
+
+
+        // 5) wait same banner delay as before
+        yield return new WaitForSeconds(bannerSeconds);
+
+        // 6) continue the game reset you already had
+        StartCoroutine(RestartRoutine());
+    }
+    void TriggerCameraZoom(Transform winner)
+    {
+        StartCoroutine(ZoomCoroutine());
+    }
+
+    IEnumerator ZoomCoroutine()
+    {
+        if (!vcam) yield break;
+
+        var lens = vcam.Lens;
+
+        float startFOV = lens.FieldOfView;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * zoomSpeed;
+            lens.FieldOfView = Mathf.Lerp(startFOV, zoomFOV, t);
+            vcam.Lens = lens;
+            yield return null;
+        }
+    }
+    IEnumerator ResetCameraFOV()
+    {
+        if (!vcam) yield break;
+
+        var lens = vcam.Lens;
+        float start = lens.FieldOfView;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * zoomSpeed;
+            lens.FieldOfView = Mathf.Lerp(start, originalFOV, t);
+            vcam.Lens = lens;
+            yield return null;
+        }
     }
 
     IEnumerator ServeLater()
@@ -198,8 +318,10 @@ public class VolleyballGameManager : MonoBehaviour
         if (reloadSceneOnWin)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
             yield break;
         }
+        VolleyballGameManager.freezePlayers = false;  // <--- UNFREEZE MOVEMENT
 
         // soft reset for rematch
         p1Score = 0;
@@ -249,6 +371,7 @@ public class VolleyballGameManager : MonoBehaviour
 
     void UpdateUI()
     {
+        //hank here
         if (uiController) uiController.UpdateScores(p1Score, p2Score);
         GameAudio.Instance?.PlayScore();
     }

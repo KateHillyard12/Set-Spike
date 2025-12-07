@@ -4806,7 +4806,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1545763964
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4998,6 +4998,7 @@ GameObject:
   - component: {fileID: 1583735080}
   - component: {fileID: 1583735079}
   - component: {fileID: 1583735078}
+  - component: {fileID: 1583735081}
   m_Layer: 5
   m_Name: GameUIController
   m_TagString: Untagged
@@ -5052,6 +5053,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1583735081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1583735077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d21470ab2205f53479d508f5f0147bac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiDocument: {fileID: 1583735079}
 --- !u!1 &1585595691
 GameObject:
   m_ObjectHideFlags: 0
@@ -5165,6 +5179,16 @@ MonoBehaviour:
   reloadSceneOnWin: 0
   requiredPlayers: 2
   preServeCountdown: 3
+  victoryDanceTriggers:
+  - VictoryDance01
+  - VictoryDance02
+  - VictoryDance03
+  - VictoryDance04
+  confettiPrefab: {fileID: 4118555502894744636, guid: 64423d8be81960f4d80f4252e655a705, type: 3}
+  vcam: {fileID: 795334850}
+  zoomFOV: 25
+  zoomSpeed: 3
+  groupFramingComponent: {fileID: 633755164}
 --- !u!4 &1602109057
 Transform:
   m_ObjectHideFlags: 0
@@ -6448,7 +6472,7 @@ MonoBehaviour:
   musicMixerGroup: {fileID: 24300002, guid: 976673c41f5482a40a7205ce9bdd9d02, type: 2}
   sfxMixerGroup: {fileID: 24300002, guid: bc96b6d61e121b046a9312d878adef18, type: 2}
   ambientMixerGroup: {fileID: 24300002, guid: 35fc475c2c5be314c9431f87cb9be011, type: 2}
-  gameMusic: {fileID: 8300000, guid: 2dd5a7d5097ef674385fb01d8c6ea14a, type: 3}
+  gameMusic: {fileID: 8300000, guid: 0baacabe596c6594da5e3dff1132414f, type: 3}
   musicVolume: 0.7
   musicFadeTime: 0.35
   BackgroundOcean: {fileID: 8300000, guid: 5c88db7cc5a28e643844815f665248d4, type: 3}

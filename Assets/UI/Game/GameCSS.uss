@@ -174,3 +174,68 @@ Label {
     -unity-font-style: bold;
     text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.6);
 }
+
+/* Pause Menu */
+#PauseMenu {
+    align-items: center;
+    justify-content: center;
+}
+
+.pause-card {
+    background-color: rgba(252, 234, 234, 0.98);
+    border-radius: 24px;
+    padding: 36px;
+    border-left-width: 8px;
+    border-left-color: rgb(255, 62, 135);
+    min-width: 520px;
+    max-width: 680px;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+#PauseTitle {
+    font-size: 72px;
+    color: rgb(255, 62, 135);
+    -unity-font-style: bold;
+    margin-bottom: 24px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.pause-panel {
+    width: 100%;
+    align-items: center;
+    gap: 12px;
+}
+
+.pause-panel Button {
+    width: 80%;
+}
+
+#PauseRulesTitle, #PauseSettingsTitle {
+    font-size: 48px;
+    color: rgb(255, 62, 135);
+    -unity-font-style: bold;
+    align-self: flex-start;
+    margin-bottom: 12px;
+}
+
+#PauseRulesBody {
+    font-size: 28px;
+    color: rgb(51, 51, 51);
+    white-space: normal;
+    margin-bottom: 20px;
+    align-self: flex-start;
+}
+
+#PauseSettingsBody {
+    font-size: 24px;
+    color: rgb(51, 51, 51);
+    white-space: normal;
+    margin-bottom: 20px;
+    align-self: flex-start;
+}
+
+#pause-back-from-rules, #pause-back-from-settings {
+    width: 40%;
+}
