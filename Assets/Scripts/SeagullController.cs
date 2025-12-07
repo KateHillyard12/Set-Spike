@@ -99,6 +99,8 @@ public class SeagullController : MonoBehaviour
 
         hasBeenHit = true;
 
+        GameAudio.Instance?.PlaySeagullHit();
+
         // Spawn VFX
         if (hitVFXPrefab != null)
         {

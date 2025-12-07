@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-public class UiAudio : MonoBehaviour
+public class StartUiAudio : MonoBehaviour
 {
     [Header("Audio Sources")]
     public AudioSource musicSource;

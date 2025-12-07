@@ -25,6 +25,7 @@ public class PlayerMovement2D : MonoBehaviour
     [Tooltip("Vertical offset from groundCheck to place the puff so it isn't clipping.")]
     public float jumpFXYOffset = 0.05f;
 
+    
     // --- internals ---
     Rigidbody rb;
     Animator anim;
@@ -33,6 +34,11 @@ public class PlayerMovement2D : MonoBehaviour
 
     float jumpBufferTimer = 0f;
     public float jumpBufferTime = 0.12f;
+
+    // hank here Footstep audio sync
+    private float footstepInterval = 0.4f; // time between footsteps in seconds
+    private float footstepTimer = 0f;
+    private bool wasMovingLastFrame = false;
 
     void Awake()
     {
@@ -100,6 +106,8 @@ public class PlayerMovement2D : MonoBehaviour
 
             // Jump force
             rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+            //hank here
+            GameAudio.Instance?.PlaySfx(GameAudio.Instance.jumpClip);
         }
 
         // Lock to lane Z
@@ -110,6 +118,24 @@ public class PlayerMovement2D : MonoBehaviour
         // Animator movement parameter
         if (anim != null)
         anim.SetFloat("MoveX", moveInput.x);
+
+        // Hank here: Animation synced footstep audio
+        bool isMoving = Mathf.Abs(moveInput.x) > 0.01f && isGrounded;
+        if (isMoving)
+        {
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0f)
+            {
+                
+                GameAudio.Instance?.PlayFootstep();
+                footstepTimer = footstepInterval;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f; // reset timer when not moving
+        }
+        wasMovingLastFrame = isMoving;
 
         if (VolleyballGameManager.freezePlayers)
         {
@@ -128,6 +154,7 @@ public class PlayerMovement2D : MonoBehaviour
         var vel = rb.linearVelocity;
         vel.x = moveInput.x * moveSpeed * control;
         rb.linearVelocity = vel;
+        
 
         // Simple facing flip
         if (Mathf.Abs(moveInput.x) > 0.01f)
@@ -151,7 +178,6 @@ public class PlayerMovement2D : MonoBehaviour
      { 
         moveInput = value.Get<Vector2>();
         if (VolleyballGameManager.freezePlayers) return;
-
      }
     public void OnJump(InputValue value) 
     { 

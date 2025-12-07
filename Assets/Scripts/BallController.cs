@@ -79,6 +79,8 @@ public class BallController : MonoBehaviour
             float hitX = c.GetContact(0).point.x;
             bool leftSide = hitX < net.position.x;
 
+            GameAudio.Instance?.PlayGroundHit();
+
             scoredAlready = true;
             manager.PointScored(leftSide ? CourtSide.Left : CourtSide.Right);
             return;
@@ -88,6 +90,8 @@ public class BallController : MonoBehaviour
         var mover = c.collider.GetComponentInParent<PlayerMovement2D>();
         if (mover != null)
         {
+            GameAudio.Instance?.PlayVolleyballHit();
+
             // spawn sand at first contact point
             if (sandFXPrefab != null)
             {
