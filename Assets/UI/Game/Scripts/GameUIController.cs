@@ -35,9 +35,6 @@ public class GameUIController : MonoBehaviour
     private VisualElement waitingPanel;
     private Label waitingLabel;
 
-    // Pause menu panel
-    private VisualElement pauseMenuPanel;
-
     // Bottom panel
     private VisualElement bottomPanel;
 
@@ -88,12 +85,8 @@ public class GameUIController : MonoBehaviour
             waitingLabel = waitingPanel.Q<Label>("WaitingLabel");
         // Note: If not found, add WaitingPanel to GameUI.uxml
 
-        // Query pause menu and bottom panels (for future use)
-        pauseMenuPanel = root.Q<VisualElement>("PauseMenu");
+        // Query bottom panel (for future use)
         bottomPanel = root.Q<VisualElement>("BottonPannel");
-
-        if (pauseMenuPanel == null)
-            Debug.LogWarning("GameUIController: 'PauseMenu' panel not found in UIDocument.");
         if (bottomPanel == null)
             Debug.LogWarning("GameUIController: 'BottonPannel' panel not found in UIDocument.");
 
@@ -151,24 +144,6 @@ public class GameUIController : MonoBehaviour
     {
         SetPlayer1Score(p1Score);
         SetPlayer2Score(p2Score);
-    }
-
-    /// <summary>
-    /// Show pause menu (for future expansion).
-    /// </summary>
-    public void ShowPauseMenu()
-    {
-        if (pauseMenuPanel != null)
-            pauseMenuPanel.style.display = DisplayStyle.Flex;
-    }
-
-    /// <summary>
-    /// Hide pause menu (for future expansion).
-    /// </summary>
-    public void HidePauseMenu()
-    {
-        if (pauseMenuPanel != null)
-            pauseMenuPanel.style.display = DisplayStyle.None;
     }
 
     /// <summary>

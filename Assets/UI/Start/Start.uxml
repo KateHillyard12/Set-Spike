@@ -26,8 +26,8 @@
             <ui:Button text="Settings" name="settings-button" />
             <ui:Button text="Rules" name="rules-button" />
             <ui:Button text="Quit" name="quit-button" style="align-items: stretch; justify-content: flex-start; align-self: auto; white-space: nowrap;" />
-            <ui:VisualElement name="PalmLeft" style="flex-grow: 0; flex-shrink: 0; align-self: flex-start; background-image: url(&quot;project://database/Assets/UI/Icons/PalTree2SetSpike.png?fileID=2800000&amp;guid=fecc3f6fc8b7db2409313ff7546d4cd8&amp;type=3#PalTree2SetSpike&quot;); position: absolute; height: 498px; width: 432px; top: 163px; left: 2px;" />
-            <ui:VisualElement name="PalmRight" style="flex-grow: 0; flex-shrink: 0; align-self: flex-start; background-image: url(&quot;project://database/Assets/UI/Icons/revPalmTreeSetSpike.png?fileID=2800000&amp;guid=bc48d961f0394e84d9784ab5c029f73d&amp;type=3#revPalmTreeSetSpike&quot;); position: absolute; height: 498px; width: 432px; top: 169px; left: 1490px;" />
+            <ui:VisualElement name="PalmRight" style="flex-grow: 0; flex-shrink: 0; align-self: flex-start; background-image: url(&quot;project://database/Assets/UI/Icons/revPalmTreeSetSpike.png?fileID=2800000&amp;guid=bc48d961f0394e84d9784ab5c029f73d&amp;type=3#revPalmTreeSetSpike&quot;); position: absolute; height: 498px; width: 432px; top: 169px; left: 1488px;" />
+            <ui:VisualElement name="PalmLeft" style="flex-grow: 0; flex-shrink: 0; align-self: flex-start; background-image: url(&quot;project://database/Assets/UI/Icons/PalTree2SetSpike.png?fileID=2800000&amp;guid=fecc3f6fc8b7db2409313ff7546d4cd8&amp;type=3#PalTree2SetSpike&quot;); position: absolute; height: 498px; width: 432px; top: 167px; left: 2px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
