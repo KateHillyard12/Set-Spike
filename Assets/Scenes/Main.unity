@@ -5126,8 +5126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be86d0cc24960ef449719b289cd8477a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicSource: {fileID: 961652589}
-  sfxSource: {fileID: 1343952506}
+  musicSource: {fileID: 0}
+  sfxSource: {fileID: 0}
   pauseMenuMusic: {fileID: 0}
   rulesMusic: {fileID: 0}
   settingsMusic: {fileID: 0}
