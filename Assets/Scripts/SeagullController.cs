@@ -17,7 +17,7 @@ public class SeagullController : MonoBehaviour
     public ParticleSystem hitVFXPrefab;
 
     [Tooltip("Optional delay before destroying bird after hit (to let VFX play).")]
-    public float destroyDelayAfterHit = 0.1f;
+    public float destroyDelayAfterHit = 1f;
 
     [Header("Facing (edit these in Inspector)")]
     [Tooltip("Rotation when bird is flying to the RIGHT (+X).")]
@@ -29,15 +29,16 @@ public class SeagullController : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool debugDrawTarget = false;
 
-    float speed;
-    Vector3 moveDir;
-    float targetX;
-    float bobOffset;
-    Rigidbody rb;
-    SeagullSpawner owner;
+    // Private fields
+    private float speed;
+    private Vector3 moveDir;
+    private float targetX;
+    private float bobOffset;
+    private Rigidbody rb;
+    private SeagullSpawner owner;
 
-    bool initialized;
-    bool hasBeenHit;
+    // State machine
+    private ISeagullState currentState;
 
     void Awake()
     {
@@ -47,6 +48,9 @@ public class SeagullController : MonoBehaviour
 
         speed = Random.Range(minSpeed, maxSpeed);
         bobOffset = Random.Range(0f, 10f);
+
+        // Start in flying state
+        ChangeState(new SeagullFlyingState());
     }
 
     public void Init(Vector3 direction, float targetXWorld, SeagullSpawner spawner)
@@ -54,14 +58,12 @@ public class SeagullController : MonoBehaviour
         moveDir = direction.normalized;
         targetX = targetXWorld;
         owner = spawner;
-        initialized = true;
 
         OrientToDirection(moveDir);
     }
 
     void OrientToDirection(Vector3 dir)
     {
-        // If moving right (+X), use rightFacingEuler, else leftFacingEuler
         bool goingRight = dir.x >= 0f;
         Vector3 euler = goingRight ? rightFacingEuler : leftFacingEuler;
         transform.rotation = Quaternion.Euler(euler);
@@ -69,66 +71,69 @@ public class SeagullController : MonoBehaviour
 
     void Update()
     {
-        if (!initialized || hasBeenHit) return;
-
-        float dt = Time.deltaTime;
-
-        // Move forward
-        transform.position += moveDir * (speed * dt);
-
-        // Bobbing
-        Vector3 pos = transform.position;
-        float bob = Mathf.Sin((Time.time + bobOffset) * bobFrequency) * bobAmplitude;
-        pos.y += bob * dt;
-        transform.position = pos;
-
-        // Despawn when past target
-        if (moveDir.x > 0f && transform.position.x >= targetX)
-            Kill();
-        else if (moveDir.x < 0f && transform.position.x <= targetX)
-            Kill();
+        // Update current state
+        if (currentState != null)
+            currentState.OnUpdate(this);
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (hasBeenHit) return;
+        // Only respond to hits while flying
+        if (currentState is not SeagullFlyingState) return;
 
         // Check for volleyball
         BallController ball = collision.collider.GetComponentInParent<BallController>();
         if (ball == null) return;
 
-        hasBeenHit = true;
-
-        GameAudio.Instance?.PlaySeagullHit();
-
-        // Spawn VFX
-        if (hitVFXPrefab != null)
-        {
-            Vector3 spawnPos = transform.position;
-            spawnPos += Camera.main.transform.forward * -2.0f;
-            if (collision.contactCount > 0)
-                spawnPos = collision.GetContact(0).point;
-
-            ParticleSystem vfx = Instantiate(hitVFXPrefab, spawnPos, Quaternion.identity);
-            vfx.Play();
-
-            var main = vfx.main;
-            float maxLifetime = main.startLifetime.constantMax;
-            Destroy(vfx.gameObject, main.duration + maxLifetime);
-        }
-
-        DisableVisuals();
-
         if (destroyOnBallHit)
         {
+            // Transition to hit state
+            var hitState = new SeagullHitState(hitVFXPrefab, transform.position, collision);
+            ChangeState(hitState);
+
+            // Schedule transition to dead state after delay
             if (destroyDelayAfterHit > 0f)
-                Invoke(nameof(Kill), destroyDelayAfterHit);
+                Invoke(nameof(TransitionToDead), destroyDelayAfterHit);
             else
-                Kill();
+                TransitionToDead();
         }
     }
 
-    void DisableVisuals()
+    void TransitionToDead()
+    {
+        ChangeState(new SeagullDeadState());
+    }
+
+    /// <summary>
+    /// Transition to a new state, calling exit on old and enter on new.
+    /// </summary>
+    public void ChangeState(ISeagullState newState)
+    {
+        if (currentState != null)
+            currentState.OnExit(this);
+
+        currentState = newState;
+
+        if (currentState != null)
+            currentState.OnEnter(this);
+    }
+
+    // Getters for state access to controller data
+    public Vector3 GetMoveDirection() => moveDir;
+    public float GetSpeed() => speed;
+    public float GetTargetX() => targetX;
+    public float GetBobOffset() => bobOffset;
+
+    public void EnableVisuals()
+    {
+        Collider col = GetComponent<Collider>();
+        if (col) col.enabled = true;
+
+        foreach (var rend in GetComponentsInChildren<Renderer>())
+            rend.enabled = true;
+    }
+
+    public void DisableVisuals()
     {
         Collider col = GetComponent<Collider>();
         if (col) col.enabled = false;
@@ -137,7 +142,7 @@ public class SeagullController : MonoBehaviour
             rend.enabled = false;
     }
 
-    void Kill()
+    public void NotifyAndDestroy()
     {
         if (owner != null)
             owner.NotifySeagullDestroyed(this);

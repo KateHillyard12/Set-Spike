@@ -166,7 +166,11 @@ public class PlayerMovement2D : MonoBehaviour
 
         if (VolleyballGameManager.freezePlayers)
         {
-            rb.linearVelocity = Vector3.zero;
+            // hank here freeze X and Z movement but allow Y 
+            vel = rb.linearVelocity;
+            vel.x = 0f;
+            vel.z = 0f;
+            rb.linearVelocity = vel;
             return;
         }
 

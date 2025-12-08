@@ -160,9 +160,9 @@ MonoBehaviour:
   laneZ: 0
   leftBoundaryX: 0
   rightBoundaryX: 0
-  headBounceImpulse: 9
-  carryXFromPlayer: 0.8
-  maxSpeed: 23
+  headBounceImpulse: 6
+  carryXFromPlayer: 0.5
+  maxSpeed: 18
   sandFXPrefab: {fileID: 942504840758030168, guid: 28c0032631e2cdc4299d1bc74515065b, type: 3}
 --- !u!114 &9066328990539388070
 MonoBehaviour:
