@@ -5099,11 +5099,11 @@ MonoBehaviour:
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: 679de7c9652ba1141a15d262624d27e2, type: 3}
-  m_PointAction: {fileID: 0}
+  m_PointAction: {fileID: -4934951974105524056, guid: 679de7c9652ba1141a15d262624d27e2, type: 3}
   m_MoveAction: {fileID: 69917079696067143, guid: 679de7c9652ba1141a15d262624d27e2, type: 3}
   m_SubmitAction: {fileID: -4986962672282785267, guid: 679de7c9652ba1141a15d262624d27e2, type: 3}
   m_CancelAction: {fileID: -949601799806529880, guid: 679de7c9652ba1141a15d262624d27e2, type: 3}
-  m_LeftClickAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 1723151791884101201, guid: 679de7c9652ba1141a15d262624d27e2, type: 3}
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
   m_ScrollWheelAction: {fileID: 0}
