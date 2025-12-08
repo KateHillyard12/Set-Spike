@@ -114,6 +114,15 @@ Button:hover {
     transition-delay: 0s;
     transition-property: all;
 }
+/* gamepad hover effect? */
+Button:focus {
+    background-color: rgb(249, 163, 106);
+    border-color: rgb(255, 62, 135);
+    transition-duration: 0.1s;
+    rotate: 6deg;
+    transition-delay: 0s;
+    transition-property: all;
+}
 
 
 Button:active {
