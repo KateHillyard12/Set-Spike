@@ -30,9 +30,9 @@ public class VolleyballGameManager : MonoBehaviour
     public float rightBoundaryX = 15f;
 
     [Header("Serve Physics")]
-    public float serveSpeedX = 8f;
-    public float serveSpeedY = 2f;
-    public float respawnDelay = 1.25f;
+    public float serveSpeedX = 6f; //default 8
+    public float serveSpeedY = 1f; //default 2
+    public float respawnDelay = 1f; //default 1.25
 
     [Header("Scoring / Win")]
     public int winScore = 15;
@@ -213,7 +213,7 @@ public class VolleyballGameManager : MonoBehaviour
         StartCoroutine(VictorySequence(p1Score > p2Score ? 0 : 1));
 
         return;
-
+    
 
     }
 

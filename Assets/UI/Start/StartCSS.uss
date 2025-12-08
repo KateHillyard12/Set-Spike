@@ -41,6 +41,27 @@ Button:hover {
     transition-delay: 0s;
     transition-property: all;
 }
+/* gamepad hover effect? */
+Button:focus {
+    border-left-color: rgb(238, 150, 16);
+    border-right-color: rgb(238, 150, 16);
+    border-top-color: rgb(238, 150, 16);
+    border-bottom-color: rgb(238, 150, 16);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    transition-timing-function: ease-in-out-bounce;
+    transition-duration: 0.1s;
+    background-color: rgb(255, 182, 0);
+    rotate: 6deg;
+    transition-delay: 0s;
+    transition-property: all;
+}
 
 .hidden {
     display: none;
