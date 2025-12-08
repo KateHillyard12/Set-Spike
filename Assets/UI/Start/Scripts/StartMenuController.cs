@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
 
-public class MainMenuController : MonoBehaviour
+
+public class StartMenuController : MonoBehaviour
 {
     private Button playButton;
     private Button rulesButton;
@@ -48,7 +50,8 @@ public class MainMenuController : MonoBehaviour
     void OnDisable()
     {
         // Unsubscribe to avoid duplicate handlers when component is re-enabled
-        if (playButton != null) playButton.clicked -= OnPlayClicked;
+        if (playButton != null) playButton.clicked -= OnPlayClicked; 
+
         if (rulesButton != null) rulesButton.clicked -= ShowRulesPanel;
         if (settingsButton != null) settingsButton.clicked -= ShowSettingsPanel;
         if (quitButton != null) quitButton.clicked -= OnQuitClicked;
@@ -71,6 +74,7 @@ public class MainMenuController : MonoBehaviour
             rulesPanel.style.display = DisplayStyle.Flex;
             if (topPanel != null) topPanel.style.display = DisplayStyle.None;
             if (mainSection != null) mainSection.style.display = DisplayStyle.None;
+            Debug.Log("Rules pressed");
         }
         else Debug.LogWarning("MainMenuController: Attempted to show rules panel but 'rules-panel' VisualElement is missing.");
     }

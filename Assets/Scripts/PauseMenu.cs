@@ -39,10 +39,12 @@ public class PauseMenu : MonoBehaviour
 
             // Keyboard
             pauseAction.AddBinding("<Keyboard>/escape");
+            pauseAction.AddBinding("<Mouse>/rightButton");
 
             // Gamepad
             pauseAction.AddBinding("<Gamepad>/start");       // menu/options
             pauseAction.AddBinding("<Gamepad>/buttonEast");  // B button
+            pauseAction.AddBinding("<Gamepad>/buttonSouth");  // a button
         }
 
         pauseAction.performed += OnPausePerformed;
@@ -106,6 +108,7 @@ public class PauseMenu : MonoBehaviour
         AudioListener.pause = true;
 
         SetSelected(firstMainButton);
+        
     }
 
     public void Resume()
@@ -155,6 +158,7 @@ public class PauseMenu : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
+        Debug.Log("Quit Game");
 #endif
     }
 

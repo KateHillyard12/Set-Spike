@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
+
 
 /// <summary>
 /// Handles the in-game pause menu using UI Toolkit.
@@ -9,9 +11,8 @@ using UnityEngine.UIElements;
 /// </summary>
 public class PauseMenuController : MonoBehaviour
 {
-    [Header("UI Document")]
-    [SerializeField] private UIDocument uiDocument;
-
+    // NOTE: This script should be attached to the SAME GameObject as GameUIController
+    // Both scripts will share the UIDocument component on that GameObject
     private VisualElement root;
     private VisualElement pauseMenuRoot;
     private VisualElement mainPanel;
@@ -28,11 +29,12 @@ public class PauseMenuController : MonoBehaviour
     private bool isPaused;
     private InputAction pauseAction;
 
+    // Remember cursor state so we can restore after pause
+    private bool prevCursorVisible;
+    private CursorLockMode prevCursorLock;
+
     void Awake()
     {
-        if (uiDocument == null)
-            uiDocument = GetComponent<UIDocument>();
-
         // Ensure normal time/audio on load
         Time.timeScale = 1f;
         AudioListener.pause = false;
@@ -40,12 +42,16 @@ public class PauseMenuController : MonoBehaviour
 
     void OnEnable()
     {
+        // Get UIDocument from this GameObject (shared with GameUIController)
+        UIDocument uiDocument = GetComponent<UIDocument>();
         root = uiDocument != null ? uiDocument.rootVisualElement : null;
         if (root == null)
         {
-            Debug.LogWarning("PauseMenuController: UIDocument root not found.");
+            Debug.LogWarning("PauseMenuController: UIDocument not found on this GameObject. Make sure PauseMenuController is on the same GameObject as GameUIController.");
             return;
         }
+
+        Debug.Log("PauseMenuController.OnEnable() - Setting up pause menu UI");
 
         // Query elements
         pauseMenuRoot = root.Q<VisualElement>("PauseMenu");
@@ -59,6 +65,26 @@ public class PauseMenuController : MonoBehaviour
         quitButton = root.Q<Button>("pause-quit-button");
         backFromRulesButton = root.Q<Button>("pause-back-from-rules");
         backFromSettingsButton = root.Q<Button>("pause-back-from-settings");
+
+        // Ensure the pause overlay itself can receive clicks
+        if (pauseMenuRoot != null)
+            pauseMenuRoot.pickingMode = PickingMode.Position;
+
+        // Ensure all buttons can receive pointer events (CRITICAL for mouse interaction)
+        if (resumeButton != null) resumeButton.pickingMode = PickingMode.Position;
+        if (settingsButton != null) settingsButton.pickingMode = PickingMode.Position;
+        if (rulesButton != null) rulesButton.pickingMode = PickingMode.Position;
+        if (quitButton != null) quitButton.pickingMode = PickingMode.Position;
+        if (backFromRulesButton != null) backFromRulesButton.pickingMode = PickingMode.Position;
+        if (backFromSettingsButton != null) backFromSettingsButton.pickingMode = PickingMode.Position;
+
+        // CRITICAL: Enable focusable on buttons so they work during pause (timeScale = 0)
+        if (resumeButton != null) resumeButton.focusable = true;
+        if (settingsButton != null) settingsButton.focusable = true;
+        if (rulesButton != null) rulesButton.focusable = true;
+        if (quitButton != null) quitButton.focusable = true;
+        if (backFromRulesButton != null) backFromRulesButton.focusable = true;
+        if (backFromSettingsButton != null) backFromSettingsButton.focusable = true;
 
         // Hook up buttons with null-safety logs
         SubscribeButtons();
@@ -137,19 +163,42 @@ public class PauseMenuController : MonoBehaviour
         Time.timeScale = 0f;
         AudioListener.pause = true;
 
+        // Unlock cursor for UI interaction and remember previous state
+        prevCursorVisible = UnityEngine.Cursor.visible;
+        prevCursorLock = UnityEngine.Cursor.lockState;
+        UnityEngine.Cursor.visible = true;
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+
+        // Force EventSystem update to ensure UI responds during pause
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.sendNavigationEvents = true;
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
         ShowMainPanel();
     }
 
     public void Resume()
     {
+        Debug.Log("🎮 Resume() called!");
+        
         if (!isPaused)
+        {
+            Debug.LogWarning("Resume() called but game is not paused");
             return;
+        }
 
         isPaused = false;
         Time.timeScale = 1f;
         AudioListener.pause = false;
 
+        // Restore cursor state
+        UnityEngine.Cursor.visible = prevCursorVisible;
+        UnityEngine.Cursor.lockState = prevCursorLock;
+
         HideAllPanels();
+        Debug.Log("✅ Game resumed successfully");
     }
 
     public void TogglePauseFromExternal()
@@ -164,37 +213,49 @@ public class PauseMenuController : MonoBehaviour
             return;
 
         SetVisible(pauseMenuRoot, true);
+        ShowRulesPanel(false);
+        ShowSettingsPanel(false);
         SetVisible(mainPanel, true);
-        SetVisible(rulesPanel, false);
-        SetVisible(settingsPanel, false);
 
         FocusElement(resumeButton);
     }
 
     private void ShowRulesPanel()
     {
-        if (pauseMenuRoot == null)
-            return;
-
-        SetVisible(pauseMenuRoot, true);
-        SetVisible(mainPanel, false);
-        SetVisible(rulesPanel, true);
-        SetVisible(settingsPanel, false);
-
-        FocusElement(backFromRulesButton);
+        ShowRulesPanel(true);
     }
 
-    private void ShowSettingsPanel()
+    private void ShowRulesPanel(bool show)
     {
         if (pauseMenuRoot == null)
             return;
 
         SetVisible(pauseMenuRoot, true);
-        SetVisible(mainPanel, false);
-        SetVisible(rulesPanel, false);
-        SetVisible(settingsPanel, true);
+        SetVisible(mainPanel, show ? false : true);
+        SetVisible(rulesPanel, show);
+        SetVisible(settingsPanel, false);
 
-        FocusElement(backFromSettingsButton);
+        if (show)
+            FocusElement(backFromRulesButton);
+    }
+
+    private void ShowSettingsPanel()
+    {
+        ShowSettingsPanel(true);
+    }
+
+    private void ShowSettingsPanel(bool show)
+    {
+        if (pauseMenuRoot == null)
+            return;
+
+        SetVisible(pauseMenuRoot, true);
+        SetVisible(mainPanel, show ? false : true);
+        SetVisible(rulesPanel, false);
+        SetVisible(settingsPanel, show);
+
+        if (show)
+            FocusElement(backFromSettingsButton);
     }
 
     private void HideAllPanels()
@@ -207,22 +268,46 @@ public class PauseMenuController : MonoBehaviour
 
     private void SubscribeButtons()
     {
-        if (resumeButton != null) resumeButton.clicked += Resume;
+        if (resumeButton != null) 
+        {
+            resumeButton.clicked += Resume;
+            Debug.Log("✅ Resume button subscribed");
+        }
         else Debug.LogWarning("PauseMenuController: 'resume-button' not found.");
 
-        if (settingsButton != null) settingsButton.clicked += ShowSettingsPanel;
+        if (settingsButton != null) 
+        {
+            settingsButton.clicked += ShowSettingsPanel;
+            Debug.Log("✅ Settings button subscribed");
+        }
         else Debug.LogWarning("PauseMenuController: 'pause-settings-button' not found.");
 
-        if (rulesButton != null) rulesButton.clicked += ShowRulesPanel;
+        if (rulesButton != null) 
+        {
+            rulesButton.clicked += ShowRulesPanel;
+            Debug.Log("✅ Rules button subscribed");
+        }
         else Debug.LogWarning("PauseMenuController: 'pause-rules-button' not found.");
 
-        if (quitButton != null) quitButton.clicked += QuitGame;
+        if (quitButton != null) 
+        {
+            quitButton.clicked += QuitGame;
+            Debug.Log("✅ Quit button subscribed");
+        }
         else Debug.LogWarning("PauseMenuController: 'pause-quit-button' not found.");
 
-        if (backFromRulesButton != null) backFromRulesButton.clicked += ShowMainPanel;
+        if (backFromRulesButton != null) 
+        {
+            backFromRulesButton.clicked += ShowMainPanel;
+            Debug.Log("✅ Back from rules button subscribed");
+        }
         else Debug.LogWarning("PauseMenuController: 'pause-back-from-rules' not found.");
 
-        if (backFromSettingsButton != null) backFromSettingsButton.clicked += ShowMainPanel;
+        if (backFromSettingsButton != null) 
+        {
+            backFromSettingsButton.clicked += ShowMainPanel;
+            Debug.Log("✅ Back from settings button subscribed");
+        }
         else Debug.LogWarning("PauseMenuController: 'pause-back-from-settings' not found.");
     }
 
@@ -242,7 +327,9 @@ public class PauseMenuController : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
+        Debug.Log("Quit Game");
 #endif
+
     }
 
     private void SetVisible(VisualElement ve, bool show)
@@ -254,11 +341,13 @@ public class PauseMenuController : MonoBehaviour
         {
             ve.RemoveFromClassList("hidden");
             ve.style.display = DisplayStyle.Flex;
+            Debug.Log("Show element: " + ve.name);
         }
         else
         {
             ve.AddToClassList("hidden");
             ve.style.display = DisplayStyle.None;
+            Debug.Log("Hide element: " + ve.name);
         }
     }
 
