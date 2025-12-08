@@ -159,4 +159,23 @@ public class GameAudio : MonoBehaviour
         }
         musicSource.volume = musicVolume;
     }
+
+    /// <summary>
+    /// Pause only the game music (called when pause menu opens).
+    /// Allows pause menu audio to play separately.
+    /// </summary>
+    public void PauseMusic()
+    {
+        if (musicSource != null && musicSource.isPlaying)
+            musicSource.Pause();
+    }
+
+    /// <summary>
+    /// Resume the game music (called when pause menu closes).
+    /// </summary>
+    public void ResumeMusic()
+    {
+        if (musicSource != null && !musicSource.isPlaying)
+            musicSource.Play();
+    }
 }

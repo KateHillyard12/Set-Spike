@@ -108,7 +108,13 @@ Button {
 Button:hover {
     background-color: rgb(249, 163, 106);
     border-color: rgb(255, 62, 135);
+    transition-duration: 0.1s;
+  /*  background-color: rgb(255, 182, 0); */
+    rotate: 6deg;
+    transition-delay: 0s;
+    transition-property: all;
 }
+
 
 Button:active {
     background-color: rgb(255, 62, 135);

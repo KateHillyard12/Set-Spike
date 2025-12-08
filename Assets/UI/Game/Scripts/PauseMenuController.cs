@@ -28,6 +28,7 @@ public class PauseMenuController : MonoBehaviour
 
     private bool isPaused;
     private InputAction pauseAction;
+    private PauseMenuAudio pauseAudio;
 
     // Remember cursor state so we can restore after pause
     private bool prevCursorVisible;
@@ -52,6 +53,13 @@ public class PauseMenuController : MonoBehaviour
         }
 
         Debug.Log("PauseMenuController.OnEnable() - Setting up pause menu UI");
+
+        // Get audio manager
+        pauseAudio = GetComponent<PauseMenuAudio>();
+        if (pauseAudio == null)
+        {
+            Debug.LogWarning("PauseMenuController: PauseMenuAudio not found on this GameObject. Audio will be disabled.");
+        }
 
         // Query elements
         pauseMenuRoot = root.Q<VisualElement>("PauseMenu");
@@ -121,7 +129,8 @@ public class PauseMenuController : MonoBehaviour
         if (isPaused)
         {
             Time.timeScale = 1f;
-            AudioListener.pause = false;
+            if (GameAudio.Instance != null)
+                GameAudio.Instance.ResumeMusic();
             isPaused = false;
         }
     }
@@ -161,7 +170,10 @@ public class PauseMenuController : MonoBehaviour
 
         isPaused = true;
         Time.timeScale = 0f;
-        AudioListener.pause = true;
+        
+        // Pause game audio but NOT AudioListener (allows PauseMenuAudio to play)
+        if (GameAudio.Instance != null)
+            GameAudio.Instance.PauseMusic();
 
         // Unlock cursor for UI interaction and remember previous state
         prevCursorVisible = UnityEngine.Cursor.visible;
@@ -175,6 +187,10 @@ public class PauseMenuController : MonoBehaviour
             EventSystem.current.sendNavigationEvents = true;
             EventSystem.current.SetSelectedGameObject(null);
         }
+
+        // Trigger audio for pause menu
+        if (pauseAudio != null)
+            pauseAudio.OnPauseMenuShown();
 
         ShowMainPanel();
     }
@@ -191,7 +207,10 @@ public class PauseMenuController : MonoBehaviour
 
         isPaused = false;
         Time.timeScale = 1f;
-        AudioListener.pause = false;
+        
+        // Resume game audio
+        if (GameAudio.Instance != null)
+            GameAudio.Instance.ResumeMusic();
 
         // Restore cursor state
         UnityEngine.Cursor.visible = prevCursorVisible;
@@ -199,6 +218,10 @@ public class PauseMenuController : MonoBehaviour
 
         HideAllPanels();
         Debug.Log("✅ Game resumed successfully");
+
+        // Trigger audio for resume
+        if (pauseAudio != null)
+            pauseAudio.OnGameResumed();
     }
 
     public void TogglePauseFromExternal()
