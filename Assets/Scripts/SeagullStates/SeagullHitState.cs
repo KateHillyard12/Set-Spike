@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-/// <summary>
-/// Seagull Hit State - Reaction when struck by the ball.
-/// Plays VFX, disables visuals, and transitions to dead state.
-/// </summary>
+
+// Seagull Hit State reaction when struck by the ball.
+// Plays VFX, disables visuals and transitions to dead state.
+
 public class SeagullHitState : ISeagullState
 {
     private ParticleSystem hitVFX;
@@ -48,7 +48,7 @@ public class SeagullHitState : ISeagullState
 
     public void OnExit(SeagullController controller)
     {
-        // Clean up VFX if still alive
+        // destory VFX if still alive
         if (hitVFX != null)
             Object.Destroy(hitVFX.gameObject);
     }
