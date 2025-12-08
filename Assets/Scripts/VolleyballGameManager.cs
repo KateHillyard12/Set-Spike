@@ -181,12 +181,14 @@ public class VolleyballGameManager : MonoBehaviour
             // ball hit left ground => RIGHT player scored
             p2Score++;
             nextServeSide = CourtSide.Right;
+            StartCoroutine(VictorySequence(1));
         }
         else
         {
             // ball hit right ground => LEFT player scored
             p1Score++;
             nextServeSide = CourtSide.Left;
+            StartCoroutine(VictorySequence(0));
         }
 
 
@@ -212,7 +214,7 @@ public class VolleyballGameManager : MonoBehaviour
         if (currentBall) Destroy(currentBall.gameObject);
         
         // Play victory sequence for the scoring player
-        StartCoroutine(VictorySequence(p1Score > p2Score ? 0 : 1));
+        //StartCoroutine(VictorySequence(p1Score > p2Score ? 0 : 1));
 
         return;
     
