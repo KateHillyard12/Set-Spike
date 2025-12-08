@@ -12,9 +12,9 @@ public class BallController : MonoBehaviour
     [HideInInspector] public float rightBoundaryX;
 
     [Header("Bounce")]
-    public float headBounceImpulse = 6f;
-    public float carryXFromPlayer = 0.5f;
-    public float maxSpeed = 18f;
+    public float headBounceImpulse = 4f; //default 6
+    public float carryXFromPlayer = 0.2f; //default 0.5
+    public float maxSpeed = 10f; //default 18
 
     [Header("FX")]
     [Tooltip("Sand particle prefab (SandBurst). Will be spawned on player contact.")]
