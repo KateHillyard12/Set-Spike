@@ -3501,6 +3501,7 @@ MonoBehaviour:
   readTimeoutMs: 25
   autoJoinArduinoPlayer: 0
   desiredPlayerIndex: 1
+  navigationCooldown: 0.25
 --- !u!4 &1121872604
 Transform:
   m_ObjectHideFlags: 0
@@ -3622,6 +3623,7 @@ MonoBehaviour:
   readTimeoutMs: 1
   autoJoinArduinoPlayer: 1
   desiredPlayerIndex: -1
+  navigationCooldown: 0.25
 --- !u!4 &1253766854
 Transform:
   m_ObjectHideFlags: 0
@@ -5096,6 +5098,7 @@ GameObject:
   - component: {fileID: 1583735083}
   - component: {fileID: 1583735084}
   - component: {fileID: 1583735085}
+  - component: {fileID: 1583735086}
   m_Layer: 5
   m_Name: GameUIController
   m_TagString: Untagged
@@ -5233,6 +5236,18 @@ MonoBehaviour:
   musicVolume: 0.65
   sfxVolume: 1
   fadeTime: 0.15
+--- !u!114 &1583735086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1583735077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77c39a0ad8a5df748a4a2c0b59cc556d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1585595691
 GameObject:
   m_ObjectHideFlags: 0
