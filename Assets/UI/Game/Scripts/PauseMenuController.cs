@@ -344,6 +344,45 @@ public class PauseMenuController : MonoBehaviour
         if (backFromSettingsButton != null) backFromSettingsButton.clicked -= ShowMainPanel;
     }
 
+    public bool IsMenuVisible()
+    {
+        if (pauseMenuRoot == null)
+            return false;
+
+        // If the pause root has "hidden" class, it is NOT visible
+        return !pauseMenuRoot.ClassListContains("hidden");
+    }
+
+    // --- Arduino helper wrappers (called by UIToolkitNavigator) ---
+
+    public void ResumeFromArduino()
+    {
+        Resume();
+    }
+
+    public void ShowRulesFromArduino()
+    {
+        ShowRulesPanel(true);
+    }
+
+    public void ShowSettingsFromArduino()
+    {
+        ShowSettingsPanel(true);
+    }
+
+    public void ShowMainFromArduino()
+    {
+        ShowMainPanel();
+    }
+
+    public void QuitFromArduino()
+    {
+        QuitGame();
+    }
+
+
+
+
     private void QuitGame()
     {
 #if UNITY_EDITOR
@@ -386,4 +425,6 @@ public class PauseMenuController : MonoBehaviour
     }
 
     public bool IsPaused => isPaused;
+
+    
 }
