@@ -1,9 +1,9 @@
 using UnityEngine;
 
-/// <summary>
+
 /// Seagull Dead State - Final state before destruction.
 /// Cleans up and notifies spawner.
-/// </summary>
+
 public class SeagullDeadState : ISeagullState
 {
     public void OnEnter(SeagullController controller)

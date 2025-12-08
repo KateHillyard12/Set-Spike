@@ -1,8 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// Seagull Flying State - Normal patrol/movement behavior.
-/// </summary>
+
+// Seagull Flying State 
+
 public class SeagullFlyingState : ISeagullState
 {
     public void OnEnter(SeagullController controller)
@@ -40,6 +40,6 @@ public class SeagullFlyingState : ISeagullState
 
     public void OnExit(SeagullController controller)
     {
-        // Nothing special needed
+        
     }
 }

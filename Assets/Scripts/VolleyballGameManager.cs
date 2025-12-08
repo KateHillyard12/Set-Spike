@@ -174,7 +174,7 @@ public class VolleyballGameManager : MonoBehaviour
     {
         if (matchOver) return;
 
-
+        
 
         if (groundSide == CourtSide.Left)
         {
@@ -208,8 +208,10 @@ public class VolleyballGameManager : MonoBehaviour
             return;
         }
 
-        // rally over -> kill old ball, serve from the scoring side after a delay
+        // rally over -> kill old ball, serve from the scoring side after a short delay
         if (currentBall) Destroy(currentBall.gameObject);
+        
+        // Play victory sequence for the scoring player
         StartCoroutine(VictorySequence(p1Score > p2Score ? 0 : 1));
 
         return;
@@ -263,8 +265,11 @@ public class VolleyballGameManager : MonoBehaviour
         // 5) wait same banner delay as before
         yield return new WaitForSeconds(bannerSeconds);
 
-        // 6) continue the game reset you already had
-        StartCoroutine(RestartRoutine());
+        // 6) unfreeze players before countdown
+        VolleyballGameManager.freezePlayers = false;
+
+        // 7) continue to next serve with countdown
+        StartCoroutine(ServeLater());
     }
     void TriggerCameraZoom(Transform winner)
     {
@@ -308,7 +313,12 @@ public class VolleyballGameManager : MonoBehaviour
     IEnumerator ServeLater()
     {
         yield return new WaitForSeconds(respawnDelay);
-        StartServe(); // no new countdown mid-match
+        
+        // hank edit Reset players to spawns and trigger countdown
+        //ResetPlayersToSpawns();
+        readyToServe = false;
+        if (countdownRoutine != null) StopCoroutine(countdownRoutine);
+        countdownRoutine = StartCoroutine(CountdownThenServe());
     }
 
     IEnumerator RestartRoutine()
