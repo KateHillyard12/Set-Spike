@@ -28,7 +28,7 @@ public class StartUiAudio : MonoBehaviour
     [Header("Music Fade")]
     public float fadeTime = 0.15f;
 
-    // Runtime lists so we can unregister callbacks
+
     private UIDocument doc;
     private List<Button> registeredButtons = new List<Button>();
     private Dictionary<Button, System.Action> clickMap = new Dictionary<Button, System.Action>();
